@@ -5,10 +5,6 @@ import Home from "../pages/Home.vue";
 import Notes from "../pages/Notes.vue";
 import AuthTest from "../pages/AuthTest.vue";
 
-import { supabase } from "../../util/supabase/supabase";
-
-let localUser;
-
 const routes = [
   {
     path: "/",
@@ -42,13 +38,6 @@ const routes = [
     component: SignIn,
   },
 ];
-
-async function getUser() {
-  localUser = await supabase.auth.getSession();
-  console.log("localUser");
-  console.log(localUser.session);
-}
-getUser();
 
 // router.beforeEach((to, from, next) => {
 //   if (to.meta.requiresAuth) {

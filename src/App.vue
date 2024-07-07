@@ -5,6 +5,7 @@
     <router-link to="/notes">notes</router-link>
     <!-- <router-link to="/signup">signup</router-link>
     <router-link to="/signIn">signIn</router-link> -->
+    <span>user : {{ useremail ? useremail : "need login" }}</span>
   </nav>
   <hr />
   <router-view></router-view>
@@ -13,17 +14,17 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { supabase } from "../util/supabase/supabase";
-const notes = ref([]);
 
-async function getURL() {
-  const { data } = await supabase.from("notes").select();
-  notes.value = data;
-  // console.log(notes.value);
-}
+const useremail = ref(null);
+
+const getSessionData = async () => {
+  const sessionData = await supabase.auth.getSession();
+  // console.log("getSessionData", sessionData.data.session.user);
+  useremail.value = sessionData.data.session?.user.email;
+};
 
 onMounted(() => {
-  getURL();
-  // console.log(supabase.auth.signUp);
+  getSessionData();
 });
 </script>
 

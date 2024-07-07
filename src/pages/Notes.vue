@@ -6,18 +6,12 @@
     </p>
     <ul>
       <li v-for="el in notes" :key="el.id">
-        <input
-          v-if="el.useremail === userEmail"
-          v-model="el.useremail"
-          type="text"
-        />
-        <input
-          v-if="el.useremail == userEmail"
-          type="text"
-          v-model="el.title"
-        />
-        <input v-if="el.useremail == userEmail" type="text" v-model="el.url" />
-        <input v-if="el.useremail == userEmail" type="text" v-model="el.desc" />
+        <div v-if="el.useremail === userEmail">
+          <input type="text" v-model="el.useremail" />
+          <input type="text" v-model="el.title" />
+          <input type="text" v-model="el.url" />
+          <input type="text" v-model="el.desc" />
+        </div>
       </li>
     </ul>
   </article>
@@ -40,17 +34,18 @@ async function getURL() {
   console.log(notes.value);
 }
 
-const seecurrentuser = async () => {
-  console.log("SeeCurrentUser");
+const getUser = async () => {
   const localUser = await supabase.auth.getSession();
+  console.log("getUser");
   console.log(localUser.data.session.user);
+
   userId.value = localUser.data.session.user.id;
   userEmail.value = localUser.data.session.user.email;
 };
 
 onMounted(() => {
   getURL();
-  seecurrentuser();
+  getUser();
 });
 </script>
 
