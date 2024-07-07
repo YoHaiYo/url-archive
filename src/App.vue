@@ -1,6 +1,11 @@
 <template>
-  <h1>LinkPort Vue</h1>
+  <nav>
+    <router-link to="/">home</router-link>
+    <router-link to="/signup">signup</router-link>
+    <router-link to="/signIn">signIn</router-link>
+  </nav>
   <hr />
+  <h1>LinkPort Vue</h1>
   <ul>
     <li>title</li>
     <li>url</li>
@@ -13,6 +18,9 @@
       <input type="text" v-model="el.desc" />
     </li>
   </ul>
+
+  <hr />
+  <router-view></router-view>
 </template>
 
 <script setup>
@@ -28,12 +36,17 @@ async function getURL() {
 
 onMounted(() => {
   getURL();
-  console.log(supabase.auth.signUp);
+  // console.log(supabase.auth.signUp);
 });
 </script>
 
 <style scoped lang="scss">
 ul {
   list-style: none;
+}
+nav {
+  a {
+    margin: 0 10px;
+  }
 }
 </style>

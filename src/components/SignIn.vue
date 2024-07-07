@@ -1,49 +1,36 @@
 <template>
   <div>
-    <h2>Sign in to your account</h2>
-    <form @submit.prevent="handleSignin">
-      <div>
-        <label for="email">Email</label>
-        <input id="email" type="email" v-model="email" />
-      </div>
-      <div>
-        <label for="password">Password</label>
-        <input id="password" type="password" v-model="password" />
-      </div>
-      <div>
-        <button type="submit">Sign in</button>
-      </div>
+    <h2>로그인</h2>
+    <form @submit.prevent="signIn">
+      <label>
+        이메일:
+        <input type="email" v-model="email" required />
+      </label>
+      <label>
+        비밀번호:
+        <input type="password" v-model="password" required />
+      </label>
+      <button type="submit">로그인</button>
     </form>
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 
-export default {
-  setup() {
-    const email = ref("");
-    const password = ref("");
+const email = ref("");
+const password = ref("");
 
-    const handleSignin = async () => {
-      try {
-        // Use the Supabase provided method to handle the signin
-        const { error } = await supabase.auth.signIn({
-          email: email.value,
-          password: password.value,
-        });
-        if (error) throw error;
-      } catch (error) {
-        alert(error.error_description || error.message);
-      }
-    };
-
-    return {
-      email,
-      password,
-      handleSignin,
-    };
-  },
+const signIn = async () => {
+  const { user, error } = await supabase.auth.signIn({
+    email: email.value,
+    password: password.value,
+  });
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("로그인 성공!");
+  }
 };
 </script>

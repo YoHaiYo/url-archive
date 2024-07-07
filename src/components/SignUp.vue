@@ -1,49 +1,36 @@
 <template>
   <div>
-    <h2>Sign up for an account</h2>
-    <form @submit.prevent="handleSignup">
-      <div>
-        <label for="email">Email</label>
-        <input id="email" type="email" v-model="email" />
-      </div>
-      <div>
-        <label for="password">Password</label>
-        <input id="password" type="password" v-model="password" />
-      </div>
-      <div>
-        <button type="submit">Sign up</button>
-      </div>
+    <h2>회원가입</h2>
+    <form @submit.prevent="signUp">
+      <label>
+        이메일:
+        <input type="email" v-model="email" required />
+      </label>
+      <label>
+        비밀번호:
+        <input type="password" v-model="password" required />
+      </label>
+      <button type="submit">회원가입</button>
     </form>
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 
-export default {
-  setup() {
-    const email = ref("");
-    const password = ref("");
+const email = ref("");
+const password = ref("");
 
-    const handleSignup = async () => {
-      try {
-        // Use the Supabase provided method to handle the signup
-        const { error } = await supabase.auth.signUp({
-          email: email.value,
-          password: password.value,
-        });
-        if (error) throw error;
-      } catch (error) {
-        alert(error.error_description || error.message);
-      }
-    };
-
-    return {
-      email,
-      password,
-      handleSignup,
-    };
-  },
+const signUp = async () => {
+  const { user, error } = await supabase.auth.signUp({
+    email: email.value,
+    password: password.value,
+  });
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("회원가입 성공!");
+  }
 };
 </script>
