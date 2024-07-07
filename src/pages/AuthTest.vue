@@ -29,7 +29,9 @@
 <script setup>
 import { ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 let email = ref("");
 let password = ref("");
 let name = ref("");
@@ -65,6 +67,8 @@ const login = async () => {
   } else {
     // console.log(data.session);
     console.log("Login Successed ! ");
+    // router.push("/notes");
+    window.location.href = "/notes"; // 새로고침되면서 페이지 이동 되어야 네비바에 유저정보도 바뀌게 보임 !
   }
 };
 
@@ -81,6 +85,8 @@ const logout = async () => {
     console.log(error.message);
   } else {
     console.log("LogOut Successed !");
+    // router.push("/");
+    window.location.href = "/";
   }
 };
 </script>
