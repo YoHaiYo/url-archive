@@ -10,7 +10,7 @@
         비밀번호:
         <input type="password" v-model="password" required />
       </label>
-      <button type="submit">로그인</button>
+      <button @click="signIn">로그인</button>
     </form>
   </div>
 </template>
@@ -23,14 +23,41 @@ const email = ref("");
 const password = ref("");
 
 const signIn = async () => {
-  const { user, error } = await supabase.auth.signIn({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: email.value,
     password: password.value,
   });
   if (error) {
-    alert(error.message);
+    console.log("error ", error);
   } else {
-    alert("로그인 성공!");
+    console.log("data : ", data);
+    console.log(data.user);
   }
 };
+
+const seeCurrentUser = async () => {
+  const localUser = await supabase.auth.getSession();
+  console.log(localUser);
+};
+
+const singOut = async () => {
+  const { error } = await supabase.auth.singOut();
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("singOut sucessed ! ");
+  }
+};
+
+// const signIn = async () => {
+//   const { user, error } = await supabase.auth.signIn({
+//     email: email.value,
+//     password: password.value,
+//   });
+//   if (error) {
+//     alert(error.message);
+//   } else {
+//     alert("로그인 성공!");
+//   }
+// };
 </script>

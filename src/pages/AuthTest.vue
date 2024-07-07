@@ -1,0 +1,97 @@
+<template>
+  <article>
+    <h1>AuthTest</h1>
+
+    <div>
+      <label for="email">Email : </label>
+      <input type="email" id="email" v-model="email" />
+    </div>
+
+    <div>
+      <label for="password">Password : </label>
+      <input type="password" id="password" v-model="password" />
+    </div>
+
+    <div>
+      <label for="name">First Name : </label>
+      <input type="name" id="name" v-model="name" />
+    </div>
+
+    <div class="btns">
+      <button @click="createAccount">Create</button>
+      <button @click="login">LogIn</button>
+      <button @click="seecurrentuser">See User</button>
+      <button @click="logout">LogOut</button>
+    </div>
+  </article>
+</template>
+
+<script setup>
+import { ref } from "vue";
+import { supabase } from "../../util/supabase/supabase";
+
+let email = ref("");
+let password = ref("");
+let name = ref("");
+
+const createAccount = async () => {
+  console.log("createAccount");
+  const { data, error } = await supabase.auth.signUp({
+    email: email.value,
+    password: password.value,
+    // user.user_metadata 객체 아래로 자유롭게 데이터추가 가능
+    options: {
+      data: {
+        first_name: name.value,
+      },
+    },
+  });
+  if (error) {
+    console.log(error.message);
+  } else {
+    alert("회원가입 성공!");
+    console.log(data);
+  }
+};
+
+const login = async () => {
+  console.log("LogIn");
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value,
+  });
+  if (error) {
+    console.log(error.message);
+  } else {
+    // console.log(data.session);
+    console.log("Login Successed ! ");
+  }
+};
+
+const seecurrentuser = async () => {
+  console.log("SeeCurrentUser");
+  const localUser = await supabase.auth.getSession();
+  console.log(localUser);
+};
+
+const logout = async () => {
+  console.log("LogOut");
+  const { data, error } = await supabase.auth.signOut();
+  if (error) {
+    console.log(error.message);
+  } else {
+    console.log("LogOut Successed !");
+  }
+};
+</script>
+
+<style scoped lang="scss">
+article {
+  text-align: end;
+  .btns {
+    button {
+      margin: 0 5px;
+    }
+  }
+}
+</style>

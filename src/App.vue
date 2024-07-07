@@ -1,24 +1,11 @@
 <template>
-  <nav>
+  <nav class="text-end">
     <router-link to="/">home</router-link>
-    <router-link to="/signup">signup</router-link>
-    <router-link to="/signIn">signIn</router-link>
+    <router-link to="/authtest">authtest</router-link>
+    <router-link to="/notes">notes</router-link>
+    <!-- <router-link to="/signup">signup</router-link>
+    <router-link to="/signIn">signIn</router-link> -->
   </nav>
-  <hr />
-  <h1>LinkPort Vue</h1>
-  <ul>
-    <li>title</li>
-    <li>url</li>
-    <li>desc</li>
-  </ul>
-  <ul>
-    <li v-for="el in notes" :key="el.id">
-      <input type="text" v-model="el.title" />
-      <input type="text" v-model="el.url" />
-      <input type="text" v-model="el.desc" />
-    </li>
-  </ul>
-
   <hr />
   <router-view></router-view>
 </template>
@@ -48,5 +35,12 @@ nav {
   a {
     margin: 0 10px;
   }
+}
+/* common */
+.bold {
+  font-weight: bold;
+}
+.text-end {
+  text-align: end;
 }
 </style>
