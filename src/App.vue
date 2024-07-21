@@ -1,5 +1,6 @@
 <template>
   <nav class="text-end">
+    <p class="text-4xl font-bold text-blue-500">테일윈드</p>
     <router-link to="/">home</router-link>
     <!-- <router-link to="/authtest">authtest</router-link> -->
     <router-link v-if="!user" to="/login">login</router-link>
