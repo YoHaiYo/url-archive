@@ -1,13 +1,12 @@
 <template>
   <nav class="text-end">
     <router-link to="/">home</router-link>
-    <router-link to="/authtest">authtest</router-link>
-    <router-link to="/notes">notes</router-link>
-    <router-link to="/login">login</router-link>
-    <router-link to="/signup">signup</router-link>
-    <!-- <router-link to="/signup">signup</router-link>
-    <router-link to="/signIn">signIn</router-link> -->
-    <span>user : {{ useremail ? useremail : "need login" }}</span>
+    <!-- <router-link to="/authtest">authtest</router-link> -->
+    <router-link v-if="!user" to="/login">login</router-link>
+    <router-link v-if="!user" to="/signup">signup</router-link>
+    <span v-if="user">Hello, {{ user.email }}</span>
+    <router-link v-if="user" to="/notes">dashboard</router-link>
+    <button v-if="user" @click="logout">LogOut</button>
   </nav>
   <hr />
   <router-view></router-view>
@@ -16,17 +15,13 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { supabase } from "../util/supabase/supabase";
+import { logout } from "../util/supabase/authUtils";
+import { getSessionData } from "../util/supabase/authUtils";
 
-const useremail = ref(null);
+const user = ref(null);
 
-const getSessionData = async () => {
-  const sessionData = await supabase.auth.getSession();
-  // console.log("getSessionData", sessionData.data.session.user);
-  useremail.value = sessionData.data.session?.user.email;
-};
-
-onMounted(() => {
-  getSessionData();
+onMounted(async () => {
+  user.value = await getSessionData();
 });
 </script>
 

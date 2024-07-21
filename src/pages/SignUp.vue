@@ -18,7 +18,7 @@
     </div>
 
     <div>
-      <label for="name">First Name : </label>
+      <!-- <label for="name">First Name : </label> -->
       <input type="name" id="name" v-model="name" />
     </div>
 
