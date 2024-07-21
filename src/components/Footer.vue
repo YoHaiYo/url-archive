@@ -162,20 +162,20 @@
             <b class="mr-1">Deploy</b>
             <a
               class="truncate"
-              href="https://linkport-nextjs-try.vercel.app/"
+              href="https://linkport-vue-try.vercel.app/"
               target="_blank"
             >
-              https://linkport-nextjs-try.vercel.app/
+              https://linkport-vue-try.vercel.app/
             </a>
           </li>
           <li class="flex flex-col flex-wrap">
             <b class="mr-1">github</b>
             <a
               class="truncate"
-              href="https://github.com/YoHaiYo/linkport_nextjs_try"
+              href="https://github.com/YoHaiYo/linkport_vue_try"
               target="_blank"
             >
-              https://github.com/YoHaiYo/linkport_nextjs_try
+              https://github.com/YoHaiYo/linkport_vue_try
             </a>
           </li>
           <li class="flex flex-col flex-wrap">
