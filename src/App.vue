@@ -3,6 +3,8 @@
     <router-link to="/">home</router-link>
     <router-link to="/authtest">authtest</router-link>
     <router-link to="/notes">notes</router-link>
+    <router-link to="/login">login</router-link>
+    <router-link to="/signup">signup</router-link>
     <!-- <router-link to="/signup">signup</router-link>
     <router-link to="/signIn">signIn</router-link> -->
     <span>user : {{ useremail ? useremail : "need login" }}</span>
