@@ -81,11 +81,25 @@ md: 기준으로 반응형 처리함.
       </div>
     </div>
   </nav>
-  <!--- 모바일뷰 -->
+
+  <!-- 모바일뷰 -->
+  <!-- 햄버거바 버튼 -->
+  <button @click="isMenuOpen = !isMenuOpen" class="md:hidden p-4">
+    <font-awesome-icon
+      icon="fa-bars"
+      class="text-gray-500"
+      style="font-size: 35; font-weight: bold"
+    />
+  </button>
+
+  <!-- 모바일 네비바 -->
   <div
-    class="navbar-menu md:hidden fixed top-0 left-0 z-50 w-full h-full bg-coolGray-900 bg-opacity-50"
+    class="navbar-menu fixed top-0 left-0 z-50 w-full h-full bg-coolGray-900 bg-opacity-50"
+    :class="{ 'translate-x-0': isMenuOpen, '-translate-x-full': !isMenuOpen }"
   >
-    <div class="fixed top-0 left-0 bottom-0 w-full w-4/6 max-w-xs bg-white">
+    <div
+      class="fixed top-0 left-0 bottom-0 w-full w-4/6 max-w-xs bg-white transition-transform duration-300 ease-in-out"
+    >
       <nav class="relative p-6 h-full overflow-y-auto">
         <div class="flex flex-col justify-between h-full">
           <a class="inline-block" href="#">
@@ -171,7 +185,7 @@ md: 기준으로 반응형 처리함.
           </div>
         </div>
       </nav>
-      <a class="navbar-close absolute top-5 p-4 right-3" href="#">
+      <button @click="isMenuOpen = false" class="absolute top-5 right-3 p-4">
         <svg
           width="12"
           height="12"
@@ -184,7 +198,7 @@ md: 기준으로 반응형 처리함.
             fill="#556987"
           />
         </svg>
-      </a>
+      </button>
     </div>
   </div>
 </template>
@@ -195,6 +209,7 @@ import { supabase } from "../../util/supabase/supabase";
 import { logout } from "../../util/supabase/authUtils";
 import { getSessionData } from "../../util/supabase/authUtils";
 
+const isMenuOpen = ref(false);
 const user = ref(null);
 
 onMounted(async () => {

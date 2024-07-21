@@ -14,3 +14,14 @@ https://linkport-vue-try.vercel.app/
 ### github
 
 https://github.com/YoHaiYo/linkport_vue_try
+
+### vue에서 폰트어썸사용
+
+https://fontawesome.com/search?o=r&m=free
+
+```
+  <font-awesome-icon icon="fa-user" />
+  <font-awesome-icon icon="fa-solid fa-user" />
+  <font-awesome-icon icon="fa-bars" class="text-blue-500 text-3xl" />
+  <font-awesome-icon icon="fa-bars" style="font-size: 24px; color: blue" />
+```
