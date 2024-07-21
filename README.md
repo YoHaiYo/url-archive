@@ -22,8 +22,11 @@ https://fontawesome.com/search?o=r&m=free
 ```
   <font-awesome-icon icon="fa-user" />
   <font-awesome-icon icon="fa-solid fa-user" />
-  <font-awesome-icon icon="fa-bars" class="text-blue-500 text-3xl" />
-  <font-awesome-icon icon="fa-bars" style="font-size: 24px; color: blue" />
+  <font-awesome-icon
+    icon="fa-star"
+    class="text-gray-400"
+    style="font-size: 16"
+  />
 ```
 
 ## 해결해야할 사항

@@ -54,45 +54,13 @@
       </div>
     </div>
   </section>
-
-  <hr />
-  <article>
-    <h1>SignUp</h1>
-
-    <div>
-      <label for="email">Email : </label>
-      <input type="email" id="email" v-model="email" />
-    </div>
-
-    <div>
-      <label for="password">Password : </label>
-      <input type="password" id="password" v-model="password" />
-    </div>
-
-    <div>
-      <label for="password">Confirm Password: </label>
-      <input type="password" id="confirmPassword" v-model="confirmPassword" />
-    </div>
-
-    <!-- <div>
-      <label for="name">First Name : </label>
-      <input type="name" id="name" v-model="name" />
-    </div> -->
-
-    <div class="btns">
-      <button @click="createAccount">Create</button>
-    </div>
-  </article>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 import { useRouter } from "vue-router";
-import { login } from "../../util/supabase/authUtils";
-import { logout } from "../../util/supabase/authUtils";
 
-const router = useRouter();
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
@@ -126,13 +94,4 @@ const createAccount = async () => {
 };
 </script>
 
-<style scoped lang="scss">
-article {
-  text-align: end;
-  .btns {
-    button {
-      margin: 0 5px;
-    }
-  }
-}
-</style>
+<style scoped lang="scss"></style>

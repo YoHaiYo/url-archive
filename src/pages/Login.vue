@@ -51,21 +51,25 @@
 import { ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 import { useRouter } from "vue-router";
-import { login } from "../../util/supabase/authUtils";
-import { logout } from "../../util/supabase/authUtils";
 
 const router = useRouter();
 let email = ref("");
 let password = ref("");
+
+const login = async () => {
+  console.log("LogIn");
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value,
+  });
+  if (error) {
+    console.log(error.message);
+  } else {
+    console.log("Login Successed ! ");
+    // router.push("/notes");
+    window.location.href = "/notes"; // 새로고침되면서 페이지 이동 되어야 네비바에 유저정보도 바뀌게 보임 !
+  }
+};
 </script>
 
-<style scoped lang="scss">
-article {
-  text-align: end;
-  .btns {
-    button {
-      margin: 0 5px;
-    }
-  }
-}
-</style>
+<style scoped lang="scss"></style>
