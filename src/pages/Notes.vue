@@ -30,83 +30,6 @@
           Add
         </button>
       </div>
-      <div class="relative inline-block text-left">
-        <div>
-          <button
-            type="button"
-            class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            id="menu-button"
-            aria-expanded="false"
-            aria-haspopup="true"
-          >
-            Options
-            <font-awesome-icon
-              icon="fa-chevron-down"
-              class="text-gray-400"
-              style="font-size: 16"
-            />
-          </button>
-        </div>
-      </div>
-      <div class="flex mb-1 p-3 justify-end">
-        <div class="w-64 h-11 relative">
-          <div
-            class="w-64 h-11 left-0 top-0 absolute rounded-[10px] border-2 border-violet-500"
-          ></div>
-          <div class="w-[30px] h-[33px] left-[63px] top-[6px] absolute"></div>
-          <div
-            class="w-[60px] h-[15px] left-[155px] top-[15px] absolute justify-center items-center gap-1 inline-flex"
-          >
-            <div
-              class="text-center text-gray-900 text-xs font-normal font-['Inter']"
-            >
-              Popular
-            </div>
-            <div
-              class="w-3.5 h-3.5 pl-[1.18px] pr-[1.19px] pt-[2.93px] pb-[4.38px] origin-top-left rotate-180 justify-center items-center flex"
-            ></div>
-          </div>
-          <div
-            class="w-8 h-[15px] left-[112px] top-[15px] absolute justify-center items-center gap-1 inline-flex"
-          >
-            <div
-              class="text-center text-gray-900 text-xs font-normal font-['Inter']"
-            >
-              All
-            </div>
-            <div
-              class="w-3.5 h-3.5 pl-[1.18px] pr-[1.19px] pt-[2.93px] pb-[4.38px] origin-top-left rotate-180 justify-center items-center flex"
-            ></div>
-          </div>
-          <div
-            class="w-4 h-4 left-[242px] top-[14px] absolute origin-top-left rotate-180 justify-center items-center inline-flex"
-          ></div>
-          <div
-            class="w-[72.50px] h-4 left-[24px] top-[14px] absolute justify-center items-center gap-[9px] inline-flex"
-          >
-            <div class="w-4 h-4 relative">
-              <div
-                class="w-[7px] h-1 left-0 top-0 absolute bg-violet-500"
-              ></div>
-              <div
-                class="w-[7px] h-1 left-0 top-[6px] absolute bg-violet-500"
-              ></div>
-              <div
-                class="w-[7px] h-1 left-0 top-[12px] absolute bg-violet-500"
-              ></div>
-              <div
-                class="w-[7px] h-1 left-[9px] top-0 absolute bg-violet-500"
-              ></div>
-              <div
-                class="w-[7px] h-1 left-[9px] top-[6px] absolute bg-violet-500"
-              ></div>
-              <div
-                class="w-[7px] h-1 left-[9px] top-[12px] absolute bg-violet-500"
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
       <!-- Card Container-->
       <!-- class="grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 max-w-4xl lg:max-w-6xl mx-auto mt-8 text-center gap-y-4 sm:gap-x-8 sm:text-left" -->
       <div class="flex flex-wrap">
@@ -162,7 +85,11 @@
     </div>
   </section>
 
-  <section v-if="!userId">
+  <section
+    v-if="!userId"
+    class="flex justify-center text-xl"
+    style="height: 50vh; align-items: center"
+  >
     <h1>Please log in and use it.</h1>
   </section>
 </template>
@@ -198,20 +125,4 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
-ul {
-  list-style: none;
-  li {
-    margin: 0 10px;
-  }
-}
-nav {
-  a {
-    margin: 0 10px;
-  }
-}
-/* common */
-.flex {
-  display: flex;
-}
-</style>
+<style scoped lang="scss"></style>
