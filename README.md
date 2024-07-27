@@ -7,13 +7,11 @@ VITE_SUPABASE_URL = ~
 VITE_SUPABASE_ANON_KEY = ~
 ```
 
-### 배포 링크
+### 참고 링크
 
-https://linkport-vue-try.vercel.app/
-
-### github
-
-https://github.com/YoHaiYo/linkport_vue_try
+- 배포 : https://linkport-vue-try.vercel.app/
+- 깃허브 : https://github.com/YoHaiYo/linkport_vue_try
+- supabase filter 구문 : https://supabase.com/docs/reference/javascript/using-filters
 
 ### vue에서 폰트어썸사용
 

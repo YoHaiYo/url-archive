@@ -32,52 +32,30 @@
       </div>
       <!-- Card Container-->
       <!-- class="grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 max-w-4xl lg:max-w-6xl mx-auto mt-8 text-center gap-y-4 sm:gap-x-8 sm:text-left" -->
-      <div class="flex flex-wrap">
+      <div
+        class="grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 max-w-4xl lg:max-w-6xl mx-auto mt-8 text-center gap-y-4 sm:gap-x-8 sm:text-left"
+      >
         <!-- Card-->
-        <div v-for="el in notes" :key="el.id">
-          <div v-if="el.useremail === userEmail" class="relative m-1">
-            <div class="absolute -inset-1">
-              <div
-                class="w-full h-full rotate-180 opacity-30 blur-lg filter bg-gradient-to-r from-yellow-400 via-pink-500 to-green-600"
-              ></div>
-            </div>
-            <div
-              class="relative overflow-hidden bg-white shadow-md rounded-xl h-full p-3"
-            >
-              <div class="flex justify-between text-gray-100">
-                <font-awesome-icon
-                  icon="fa-star"
-                  class="text-gray-400"
-                  style="font-size: 16"
-                />
-                <!-- <h3 class="font-bold text-gray-600">github</h3> -->
-                <input
-                  class="font-bold text-gray-600"
-                  type="text"
-                  v-model="el.title"
-                />
-                <font-awesome-icon
-                  icon="fa-edit"
-                  class="text-gray-400"
-                  style="font-size: 16"
-                />
-              </div>
-              <div>
-                <input
-                  class="mt-3 text-gray-600"
-                  type="text"
-                  v-model="el.url"
-                />
-              </div>
-              <div>
-                <input
-                  class="mt-3 text-gray-600"
-                  type="text"
-                  v-model="el.desc"
-                />
-              </div>
-            </div>
-          </div>
+        <div
+          v-for="el in notes"
+          :key="el.id"
+          class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
+        >
+          <input
+            class="border font-bold text-gray-600"
+            type="text"
+            v-model="el.title"
+          />
+          <input
+            class="mt-3 border text-gray-600"
+            type="text"
+            v-model="el.desc"
+          />
+          <input
+            class="mt-3 border text-gray-600"
+            type="text"
+            v-model="el.url"
+          />
         </div>
         <!-- /Card-->
       </div>
@@ -104,24 +82,29 @@ const userId = ref(null);
 const userEmail = ref(null);
 
 async function getTableData() {
-  const { data } = await supabase.from("notes").select(); // 테이블명
+  // from('테이블명'), select('column명'), eq('column명', 'column내용')
+  const { data } = await supabase
+    .from("notes")
+    .select("*")
+    .eq("useremail", userEmail.value);
   notes.value = data;
   console.log(notes.value);
 }
 
 const getUser = async () => {
   const localUser = await supabase.auth.getSession();
-  // console.log("getUser");
   // console.log(localUser.data.session.user);
 
   user.value = localUser.data.session.user;
   userId.value = localUser.data.session.user.id;
   userEmail.value = localUser.data.session.user.email;
+
+  getTableData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
 };
 
 onMounted(() => {
-  getTableData();
   getUser();
+  // getTableData();
 });
 </script>
 
