@@ -18,11 +18,11 @@
       </div>
       <div class="flex mb-1 p-3 justify-center">
         <input
+          @keydown.enter="addNote"
           v-model="newUrl"
           class="w-full md:w-1/2 rounded-tl rounded-bl p-1 border border-gray-400 text-gray-600"
           placeholder="Add your multiple URLs at once!"
           type="text"
-          value=""
         /><button
           @click="addNote"
           class="write rounded-tr rounded-br bg-violet-500 text-gray-100 px-2"
@@ -64,32 +64,36 @@
       >
         <!-- Card-->
         <div
+          @click="openLink(el.url)"
           v-for="el in notes"
           :key="el.id"
           class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
+          :class="editMode ? '' : 'cursor-pointer'"
         >
+          <!-- 평상시 -->
+          <p v-if="!editMode">
+            {{ el.title }}
+          </p>
+          <!-- 편집모드일때 -->
           <div v-if="editMode">
             <button class="bg-red-500 ml-2" @click="deleteNote(el.id)">
               Delete
             </button>
           </div>
           <input
-            class="font-bold text-gray-600"
-            :class="!editMode ? '' : 'border'"
+            v-if="editMode"
+            class="font-bold border text-gray-600"
             v-model="el.title"
-            :readonly="!editMode"
           />
           <input
-            class="mt-3 text-gray-600"
-            :class="!editMode ? '' : 'border'"
+            v-if="editMode"
+            class="mt-3 border text-gray-600"
             v-model="el.desc"
-            :readonly="!editMode"
           />
           <input
-            class="mt-3 text-gray-600"
-            :class="!editMode ? '' : 'border'"
+            v-if="editMode"
+            class="mt-3 border text-gray-600"
             v-model="el.url"
-            :readonly="!editMode"
           />
         </div>
         <!-- /Card-->
@@ -155,7 +159,7 @@ const addNote = async () => {
   const now = new Date().toISOString(); // timestamp용
   const { error } = await supabase.from(tableName).insert({
     useremail: userEmail.value,
-    title: "add title", // 해당 사이트 도메인부분만 추출하기
+    title: extractDomain(newUrl.value), // 해당 사이트 도메인부분만 추출하기
     desc: "add desc", // 해당 사이트 meta 태그에서 설명가져오기
     url: newUrl.value,
     writetime: now, // timestamptz
@@ -200,9 +204,23 @@ const deleteNote = async (id) => {
 };
 
 /// 프론트 함수
+// 편집모드 on/off
 const toggleEditMode = () => {
   editMode.value = !editMode.value;
   console.log("editMode.value", editMode.value);
+};
+// 편집모드 off일때만 링크이동 허용
+const openLink = (url) => {
+  if (!editMode.value) window.open(url, "_blank");
+};
+// url 도메인 부분 추출
+const extractDomain = (url) => {
+  // URL에서 //와 첫 번째 . 사이의 부분을 추출
+  const match = url.match(/\/\/([^\.]+)/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  return url.slice(0, 10); // URL 형식이 잘못된 경우 그냥 문자열끊어서 추출
 };
 
 onMounted(() => {
