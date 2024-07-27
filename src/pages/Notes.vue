@@ -36,7 +36,7 @@
           <p>EditMode: {{ editMode }}</p>
           <button
             v-if="!editMode"
-            @click="chageEditMode"
+            @click="toggleEditMode"
             class="save rounded bg-blue-500 text-gray-100 px-2 ml-2"
           >
             Edit
@@ -50,7 +50,7 @@
           </button>
           <button
             v-if="editMode"
-            @click="chageEditMode"
+            @click="toggleEditMode"
             class="save rounded bg-yellow-500 text-gray-100 px-2 ml-2"
           >
             Cancle
@@ -113,7 +113,6 @@ import { supabase } from "../../util/supabase/supabase";
 // -------------------------- 변수 선언부 --------------------------
 // 유틸변수
 const tableName = "notes"; // DB의 table명
-const now = new Date().toISOString(); // timestamp용
 // DB변수
 const notes = ref([]);
 const user = ref(null);
@@ -144,8 +143,6 @@ async function getTableData() {
 
 const getUser = async () => {
   const localUser = await supabase.auth.getSession();
-  // console.log(localUser.data.session.user);
-
   user.value = localUser.data.session.user;
   userId.value = localUser.data.session.user.id;
   userEmail.value = localUser.data.session.user.email;
@@ -155,6 +152,7 @@ const getUser = async () => {
 
 // 노트 추가
 const addNote = async () => {
+  const now = new Date().toISOString(); // timestamp용
   const { error } = await supabase.from(tableName).insert({
     useremail: userEmail.value,
     title: "add title", // 해당 사이트 도메인부분만 추출하기
@@ -176,7 +174,7 @@ const saveAllNotes = async () => {
     const { id, title, desc, url } = note;
     await supabase.from(tableName).update({ title, desc, url }).eq("id", id);
   }
-  chageEditMode(); // 저장후 편집모드 닫기
+  toggleEditMode(); // 저장후 편집모드 닫기
   alert("All notes have been saved.");
 };
 
@@ -191,14 +189,13 @@ const deleteNote = async (id) => {
 };
 
 /// 프론트 함수
-const chageEditMode = () => {
+const toggleEditMode = () => {
   editMode.value = !editMode.value;
   console.log("editMode.value", editMode.value);
 };
 
 onMounted(() => {
   getUser();
-  // getTableData();
 });
 </script>
 
