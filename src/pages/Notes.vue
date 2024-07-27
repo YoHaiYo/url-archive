@@ -29,12 +29,33 @@
         >
           Add
         </button>
-        <button
-          class="save rounded bg-green-500 text-gray-100 px-2 ml-2"
-          @click="saveAllNotes"
-        >
-          All Save
-        </button>
+      </div>
+      <div class="flex justify-between">
+        <div>this page is not shared</div>
+        <div class="flex">
+          <p>EditMode: {{ editMode }}</p>
+          <button
+            v-if="!editMode"
+            @click="chageEditMode"
+            class="save rounded bg-blue-500 text-gray-100 px-2 ml-2"
+          >
+            Edit
+          </button>
+          <button
+            v-if="editMode"
+            class="save rounded bg-green-500 text-gray-100 px-2 ml-2"
+            @click="saveAllNotes"
+          >
+            Save
+          </button>
+          <button
+            v-if="editMode"
+            @click="chageEditMode"
+            class="save rounded bg-yellow-500 text-gray-100 px-2 ml-2"
+          >
+            Cancle
+          </button>
+        </div>
       </div>
       <!-- Card Container-->
       <!-- class="grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 max-w-4xl lg:max-w-6xl mx-auto mt-8 text-center gap-y-4 sm:gap-x-8 sm:text-left" -->
@@ -47,27 +68,29 @@
           :key="el.id"
           class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
         >
-          <p>id : {{ el.id }}</p>
-          <input
-            class="border font-bold text-gray-600"
-            type="text"
-            v-model="el.title"
-          />
-          <input
-            class="mt-3 border text-gray-600"
-            type="text"
-            v-model="el.desc"
-          />
-          <input
-            class="mt-3 border text-gray-600"
-            type="text"
-            v-model="el.url"
-          />
-          <div>
+          <div v-if="editMode">
             <button class="bg-red-500 ml-2" @click="deleteNote(el.id)">
               Delete
             </button>
           </div>
+          <input
+            class="font-bold text-gray-600"
+            :class="!editMode ? '' : 'border'"
+            v-model="el.title"
+            :readonly="!editMode"
+          />
+          <input
+            class="mt-3 text-gray-600"
+            :class="!editMode ? '' : 'border'"
+            v-model="el.desc"
+            :readonly="!editMode"
+          />
+          <input
+            class="mt-3 text-gray-600"
+            :class="!editMode ? '' : 'border'"
+            v-model="el.url"
+            :readonly="!editMode"
+          />
         </div>
         <!-- /Card-->
       </div>
@@ -87,16 +110,22 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
-
+// -------------------------- 변수 선언부 --------------------------
+// 유틸변수
 const tableName = "notes"; // DB의 table명
-
+const now = new Date().toISOString(); // timestamp용
+// DB변수
 const notes = ref([]);
 const user = ref(null);
 const userId = ref(null);
 const userEmail = ref(null);
-
+// 프론트변수
 const newUrl = ref("");
+const editMode = ref(false);
 
+// -------------------------- 함수 선언부 --------------------------
+
+/// 백엔드 함수
 // 데이터가져오기
 async function getTableData() {
   // from('테이블명'), select('column명'), eq('column명', 'column내용')
@@ -104,7 +133,12 @@ async function getTableData() {
     .from(tableName)
     .select("*")
     .eq("useremail", userEmail.value);
-  notes.value = data;
+
+  // writetime 기준으로 최신 순으로 정렬
+  // notes.value = data;
+  notes.value = data.sort(
+    (a, b) => new Date(b.writetime) - new Date(a.writetime)
+  );
   console.log("notes.value", notes.value);
 }
 
@@ -126,6 +160,7 @@ const addNote = async () => {
     title: "add title", // 해당 사이트 도메인부분만 추출하기
     desc: "add desc", // 해당 사이트 meta 태그에서 설명가져오기
     url: newUrl.value,
+    writetime: now, // timestamptz
   });
   if (error) {
     console.log("err : ", error);
@@ -141,6 +176,7 @@ const saveAllNotes = async () => {
     const { id, title, desc, url } = note;
     await supabase.from(tableName).update({ title, desc, url }).eq("id", id);
   }
+  chageEditMode(); // 저장후 편집모드 닫기
   alert("All notes have been saved.");
 };
 
@@ -154,10 +190,20 @@ const deleteNote = async (id) => {
   }
 };
 
+/// 프론트 함수
+const chageEditMode = () => {
+  editMode.value = !editMode.value;
+  console.log("editMode.value", editMode.value);
+};
+
 onMounted(() => {
   getUser();
   // getTableData();
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+input {
+  outline: none; /* 포커스 시 외곽선 제거 */
+}
+</style>
