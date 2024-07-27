@@ -185,7 +185,7 @@ const saveAllNotes = async () => {
     console.error("Error saving all notes:", error.message);
   } else {
     toggleEditMode();
-    alert("All notes have been saved.");
+    console.log("All notes have been saved.");
   }
 };
 
