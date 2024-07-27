@@ -27,6 +27,14 @@ https://fontawesome.com/search?o=r&m=free
   />
 ```
 
+### 파비콘가져오기
+
+`To get the favicon for a domain, use`
+https://s2.googleusercontent.com/s2/favicons?domain=www.stackoverflow.com
+
+`To get the favicon for an URL, use`
+https://s2.googleusercontent.com/s2/favicons?domain_url=https://www.stackoverflow.com
+
 ### 해결한 이슈
 
 - saveAllNotes for of 문으로 저장하니 성능 이슈발생

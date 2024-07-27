@@ -71,12 +71,25 @@
           :class="editMode ? '' : 'cursor-pointer'"
         >
           <!-- 평상시 -->
-          <p v-if="!editMode">
-            {{ el.title }}
-          </p>
+          <div v-if="!editMode" class="flex items-center">
+            <img
+              class="favicon"
+              :src="
+                'https://s2.googleusercontent.com/s2/favicons?domain_url=' +
+                el.url
+              "
+              alt="favicon"
+            />
+            <p class="ml-1">
+              {{ el.title }}
+            </p>
+          </div>
           <!-- 편집모드일때 -->
           <div v-if="editMode">
-            <button class="bg-red-500 ml-2" @click="deleteNote(el.id)">
+            <button
+              @click="deleteNote(el.id)"
+              class="bg-red-500 write rounded text-gray-100 px-2"
+            >
               Delete
             </button>
           </div>
@@ -231,5 +244,9 @@ onMounted(() => {
 <style scoped lang="scss">
 input {
   outline: none; /* 포커스 시 외곽선 제거 */
+}
+.favicon {
+  widows: 16px;
+  height: 16px;
 }
 </style>
