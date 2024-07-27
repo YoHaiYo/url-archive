@@ -169,13 +169,24 @@ const addNote = async () => {
 
 // 노트 전체저장
 const saveAllNotes = async () => {
-  for (const note of notes.value) {
-    // notes.value 배열의 모든 데이터 순회해서 전체저장
-    const { id, title, desc, url } = note;
-    await supabase.from(tableName).update({ title, desc, url }).eq("id", id);
+  const updates = notes.value.map((note) => ({
+    id: note.id,
+    title: note.title,
+    desc: note.desc,
+    url: note.url,
+  }));
+
+  // upsert로 필요한 부분만 저장
+  const { error } = await supabase
+    .from(tableName)
+    .upsert(updates, { onConflict: ["id"] }); // upsert 사용시 기준이 되는 필드임.
+
+  if (error) {
+    console.error("Error saving all notes:", error.message);
+  } else {
+    toggleEditMode();
+    alert("All notes have been saved.");
   }
-  toggleEditMode(); // 저장후 편집모드 닫기
-  alert("All notes have been saved.");
 };
 
 // 노트 개별삭제
