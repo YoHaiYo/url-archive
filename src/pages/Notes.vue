@@ -222,10 +222,20 @@ const toggleEditMode = () => {
   editMode.value = !editMode.value;
   console.log("editMode.value", editMode.value);
 };
-// 편집모드 off일때만 링크이동 허용
+
+// 페이지 이동 함수 (a태그 대용)
 const openLink = (url) => {
-  if (!editMode.value) window.open(url, "_blank");
+  // URL이 http:// 또는 https://로 시작하지 않으면 https://를 추가
+  const formattedUrl =
+    url && !url.startsWith("http://") && !url.startsWith("https://")
+      ? "https://" + url
+      : url;
+  // 편집모드가 꺼져 있을 때만 링크 이동 허용
+  if (!editMode.value && formattedUrl) {
+    window.open(formattedUrl, "_blank");
+  }
 };
+
 // url 도메인 부분 추출
 const extractDomain = (url) => {
   // URL에서 //와 첫 번째 . 사이의 부분을 추출
