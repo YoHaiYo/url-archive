@@ -18,16 +18,22 @@
       </div>
       <div class="flex mb-1 p-3 justify-center">
         <input
-          id="add-url"
+          v-model="newUrl"
           class="w-full md:w-1/2 rounded-tl rounded-bl p-1 border border-gray-400 text-gray-600"
           placeholder="Add your multiple URLs at once!"
           type="text"
           value=""
-          name="url"
         /><button
+          @click="addNote"
           class="write rounded-tr rounded-br bg-violet-500 text-gray-100 px-2"
         >
           Add
+        </button>
+        <button
+          class="save rounded bg-green-500 text-gray-100 px-2 ml-2"
+          @click="saveAllNotes"
+        >
+          All Save
         </button>
       </div>
       <!-- Card Container-->
@@ -37,17 +43,15 @@
       >
         <!-- Card-->
         <div
-          v-for="(el, idx) in notes"
+          v-for="el in notes"
           :key="el.id"
           class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
         >
           <p>id : {{ el.id }}</p>
-          <p>idx : {{ idx }}</p>
           <input
             class="border font-bold text-gray-600"
             type="text"
             v-model="el.title"
-            @input="updateNote(el)"
           />
           <input
             class="mt-3 border text-gray-600"
@@ -60,13 +64,7 @@
             v-model="el.url"
           />
           <div>
-            <button
-              class="bg-blue-500"
-              @click="updateURL(el.id, el.title, el.url, el.desc)"
-            >
-              Save
-            </button>
-            <button class="bg-red-500 ml-2" @click="deleteURL(el.id)">
+            <button class="bg-red-500 ml-2" @click="deleteNote(el.id)">
               Delete
             </button>
           </div>
@@ -90,15 +88,20 @@
 import { onMounted, ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 
+const tableName = "notes"; // DB의 table명
+
 const notes = ref([]);
 const user = ref(null);
 const userId = ref(null);
 const userEmail = ref(null);
 
+const newUrl = ref("");
+
+// 데이터가져오기
 async function getTableData() {
   // from('테이블명'), select('column명'), eq('column명', 'column내용')
   const { data } = await supabase
-    .from("notes")
+    .from(tableName)
     .select("*")
     .eq("useremail", userEmail.value);
   notes.value = data;
@@ -116,66 +119,40 @@ const getUser = async () => {
   getTableData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
 };
 
-const updateNote = async (note) => {
-  const { id, title, desc, url } = note;
-  await supabase.from("notes").update({ title, desc, url }).eq("id", id);
+// 노트 추가
+const addNote = async () => {
+  const { error } = await supabase.from(tableName).insert({
+    useremail: userEmail.value,
+    title: "add title", // 해당 사이트 도메인부분만 추출하기
+    desc: "add desc", // 해당 사이트 meta 태그에서 설명가져오기
+    url: newUrl.value,
+  });
+  if (error) {
+    console.log("err : ", error);
+  }
+  newUrl.value = ""; // 입력창 초기화
+  getTableData(); // DB로 보낸후 프론트로 다시 가져오기
 };
 
-// URL을 업데이트하는 함수
-async function updateURL(id, newTitle, newUrl, newDesc) {
-  const { data, error } = await supabase
-    .from("notes")
-    .update({ title: newTitle, url: newUrl, desc: newDesc })
-    .eq("id", id);
-  if (error) {
-    console.error("Error updating url:", error.message);
-  } else {
-    const index = notes.value.findIndex((notes) => notes.id === id);
-    if (index !== -1) {
-      notes.value[index].title = newTitle;
-      notes.value[index].url = newUrl;
-      notes.value[index].desc = newDesc;
-      notes.value[index].tempTitle = newTitle;
-      notes.value[index].tempUrl = newUrl;
-      notes.value[index].tempdesc = newDesc;
-    }
+// 노트 전체저장
+const saveAllNotes = async () => {
+  for (const note of notes.value) {
+    // notes.value 배열의 모든 데이터 순회해서 전체저장
+    const { id, title, desc, url } = note;
+    await supabase.from(tableName).update({ title, desc, url }).eq("id", id);
   }
-}
+  alert("All notes have been saved.");
+};
 
-// URL을 삭제하는 함수
-async function deleteURL(id) {
-  const { error } = await supabase.from("notes").delete().eq("id", id);
+// 노트 개별삭제
+const deleteNote = async (id) => {
+  const { error } = await supabase.from(tableName).delete().eq("id", id);
   if (error) {
     console.error("Error deleting url:", error.message);
   } else {
     notes.value = notes.value.filter((url) => url.id !== id);
   }
-}
-
-// 새로운 URL을 추가하는 함수
-async function addURL() {
-  const { data, error } = await supabase.from("notes").insert([
-    {
-      title: newTitle.value,
-      url: newUrl.value,
-      desc: newDesc.value,
-    },
-  ]);
-  console.log("data1", data);
-  if (error) {
-    console.error("Error adding url:", error.message);
-  } else {
-    if (data && data.length > 0) {
-      // const newURL = { ...data[0], tempTitle: data[0].title, tempUrl: data[0].url, tempdesc: data[0].desc }
-      // urls.value.push(newURL) // 새로운 URL을 배열에 추가
-      newTitle.value = "";
-      newUrl.value = "";
-      newDesc.value = "";
-      console.log("data2", data);
-    }
-  }
-  getTableData(); // 추가 후 다시 읽어서 화면 그리기
-}
+};
 
 onMounted(() => {
   getUser();
