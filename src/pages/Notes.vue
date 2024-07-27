@@ -14,7 +14,7 @@
         >
           {{ userEmail }}'s Notes
         </h2>
-        <p class="mb-4 text-gray-900">Please add url to make a card!</p>
+        <!-- <p class="mb-4 text-gray-900">Please add url to make a card!</p> -->
       </div>
       <div class="flex mb-1 p-3 justify-center">
         <input
@@ -37,14 +37,17 @@
       >
         <!-- Card-->
         <div
-          v-for="el in notes"
+          v-for="(el, idx) in notes"
           :key="el.id"
           class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
         >
+          <p>id : {{ el.id }}</p>
+          <p>idx : {{ idx }}</p>
           <input
             class="border font-bold text-gray-600"
             type="text"
             v-model="el.title"
+            @input="updateNote(el)"
           />
           <input
             class="mt-3 border text-gray-600"
@@ -56,6 +59,17 @@
             type="text"
             v-model="el.url"
           />
+          <div>
+            <button
+              class="bg-blue-500"
+              @click="updateURL(el.id, el.title, el.url, el.desc)"
+            >
+              Save
+            </button>
+            <button class="bg-red-500 ml-2" @click="deleteURL(el.id)">
+              Delete
+            </button>
+          </div>
         </div>
         <!-- /Card-->
       </div>
@@ -88,7 +102,7 @@ async function getTableData() {
     .select("*")
     .eq("useremail", userEmail.value);
   notes.value = data;
-  console.log(notes.value);
+  console.log("notes.value", notes.value);
 }
 
 const getUser = async () => {
@@ -101,6 +115,67 @@ const getUser = async () => {
 
   getTableData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
 };
+
+const updateNote = async (note) => {
+  const { id, title, desc, url } = note;
+  await supabase.from("notes").update({ title, desc, url }).eq("id", id);
+};
+
+// URL을 업데이트하는 함수
+async function updateURL(id, newTitle, newUrl, newDesc) {
+  const { data, error } = await supabase
+    .from("notes")
+    .update({ title: newTitle, url: newUrl, desc: newDesc })
+    .eq("id", id);
+  if (error) {
+    console.error("Error updating url:", error.message);
+  } else {
+    const index = notes.value.findIndex((notes) => notes.id === id);
+    if (index !== -1) {
+      notes.value[index].title = newTitle;
+      notes.value[index].url = newUrl;
+      notes.value[index].desc = newDesc;
+      notes.value[index].tempTitle = newTitle;
+      notes.value[index].tempUrl = newUrl;
+      notes.value[index].tempdesc = newDesc;
+    }
+  }
+}
+
+// URL을 삭제하는 함수
+async function deleteURL(id) {
+  const { error } = await supabase.from("notes").delete().eq("id", id);
+  if (error) {
+    console.error("Error deleting url:", error.message);
+  } else {
+    notes.value = notes.value.filter((url) => url.id !== id);
+  }
+}
+
+// 새로운 URL을 추가하는 함수
+async function addURL() {
+  const { data, error } = await supabase.from("notes").insert([
+    {
+      title: newTitle.value,
+      url: newUrl.value,
+      desc: newDesc.value,
+    },
+  ]);
+  console.log("data1", data);
+  if (error) {
+    console.error("Error adding url:", error.message);
+  } else {
+    if (data && data.length > 0) {
+      // const newURL = { ...data[0], tempTitle: data[0].title, tempUrl: data[0].url, tempdesc: data[0].desc }
+      // urls.value.push(newURL) // 새로운 URL을 배열에 추가
+      newTitle.value = "";
+      newUrl.value = "";
+      newDesc.value = "";
+      console.log("data2", data);
+    }
+  }
+  getTableData(); // 추가 후 다시 읽어서 화면 그리기
+}
 
 onMounted(() => {
   getUser();
