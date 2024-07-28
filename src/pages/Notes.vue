@@ -45,9 +45,7 @@
           </p>
         </div>
         <!-- Btns : Edit / Share / Setting  -->
-        <div
-          class="flex items-center justify-start bg-white border-2 border-violet-500 rounded-md px-3 py-2 flex items-center justify-start"
-        >
+        <div :class="btnContainer">
           <!-- setting icon -->
           <font-awesome-icon
             v-if="!editMode"
@@ -179,6 +177,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
+import { btnContainer } from "../../util/style/classNames";
 // -------------------------- 변수 선언부 --------------------------
 // 유틸변수
 const tableName = "notes"; // DB의 table명
