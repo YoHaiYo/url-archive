@@ -20,28 +20,80 @@
         <input
           @keydown.enter="addNote"
           v-model="newUrl"
-          class="w-full md:w-1/2 rounded-tl rounded-bl p-1 border border-gray-400 text-gray-600"
+          class="placeholder-center w-full md:w-1/2 rounded-tl rounded-bl p-1 border border-gray-400 text-gray-600"
           placeholder="Just copy and paste url and press Enter!"
           type="text"
         /><button
           @click="addNote"
           class="write rounded-tr rounded-br bg-violet-500 text-gray-100 px-2"
+          title="Add URL"
         >
-          Add
+          <font-awesome-icon
+            icon="fa-plus"
+            class="text-white"
+            style="font-size: 17px"
+          />
+          <!-- Add -->
         </button>
       </div>
       <div class="flex justify-between">
-        <div>this page is not shared</div>
-        <div class="flex">
-          <p>EditMode: {{ editMode }}</p>
-          <button
+        <div
+          class="h-10 px-2.5 py-2 bg-violet-200 border-t border-b border-violet-500 justify-center items-center gap-2.5 inline-flex"
+        >
+          <p class="text-center text-violet-500 font-normal">
+            This page is not shared.
+          </p>
+        </div>
+        <!-- Btns : Edit / Share / Setting  -->
+        <div
+          class="flex items-center justify-start bg-white border-2 border-violet-500 rounded-md px-3 py-2 flex items-center justify-start"
+        >
+          <!-- setting icon -->
+          <font-awesome-icon
+            v-if="!editMode"
+            @click="() => {}"
+            icon="fa-gear"
+            title="Setting"
+            class="text-gray-400 cursor-pointer hover:text-violet-500"
+            style="font-size: 20"
+          />
+          <!-- share icon -->
+          <font-awesome-icon
+            v-if="!editMode"
+            @click="() => {}"
+            title="Share"
+            icon="fa-share-nodes"
+            class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
+            style="font-size: 20"
+          />
+          <!-- edit icon -->
+          <font-awesome-icon
             v-if="!editMode"
             @click="toggleEditMode"
-            class="save rounded bg-blue-500 text-gray-100 px-2 ml-2"
-          >
-            Edit
-          </button>
-          <button
+            title="Edit"
+            icon="fa-pen-to-square"
+            class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
+            style="font-size: 20"
+          />
+          <!-- save icon -->
+          <font-awesome-icon
+            v-if="editMode"
+            @click="saveAllNotes"
+            title="Save"
+            icon="fa-floppy-disk"
+            class="text-gray-400 cursor-pointer hover:text-violet-500"
+            style="font-size: 20"
+          />
+          <!-- cancle icon -->
+          <font-awesome-icon
+            v-if="editMode"
+            @click="toggleEditMode"
+            title="Cancle"
+            icon="fa-xmark"
+            class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
+            style="font-size: 24"
+          />
+          <!-- <button
             v-if="editMode"
             class="save rounded bg-green-500 text-gray-100 px-2 ml-2"
             @click="saveAllNotes"
@@ -54,7 +106,7 @@
             class="save rounded bg-yellow-500 text-gray-100 px-2 ml-2"
           >
             Cancle
-          </button>
+          </button> -->
         </div>
       </div>
       <!-- Card Container-->
