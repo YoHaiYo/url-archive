@@ -116,19 +116,23 @@
       </div>
       <!-- Card Container-->
       <!-- class="grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 max-w-4xl lg:max-w-6xl mx-auto mt-8 text-center gap-y-4 sm:gap-x-8 sm:text-left" -->
-      <div
-        class="grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 max-w-4xl lg:max-w-6xl mx-auto mt-8 text-center gap-y-4 sm:gap-x-8 sm:text-left"
-      >
+      <div :class="selectViewType">
         <!-- Card-->
+        <!-- :class="editMode ? '' : 'cursor-pointer'" -->
         <div
           @click="openLink(el.url)"
           v-for="el in notes"
           :key="el.id"
           class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
-          :class="editMode ? '' : 'cursor-pointer'"
+          :class="viewType === 'list' ? 'mt-3' : ''"
+          :style="editMode ? null : { cursor: 'pointer' }"
         >
           <!-- 평상시 -->
-          <div v-if="!editMode" class="flex items-center">
+          <!-- simple view -->
+          <div
+            v-if="viewType === 'simple' && !editMode"
+            class="flex items-center"
+          >
             <img
               class="favicon"
               :src="
@@ -139,6 +143,51 @@
             />
             <p class="ml-1">
               {{ el.title }}
+            </p>
+          </div>
+          <!-- grid view -->
+          <div
+            v-if="viewType === 'grid' && !editMode"
+            class="flexxx items-centerxx"
+          >
+            <div class="flex items-center">
+              <img
+                class="favicon"
+                :src="
+                  'https://s2.googleusercontent.com/s2/favicons?domain_url=' +
+                  el.url
+                "
+                alt="favicon"
+              />
+              <p class="ml-1">
+                {{ el.title }}
+              </p>
+            </div>
+            <p class="ml-1">
+              {{ el.desc }}
+            </p>
+          </div>
+          <!-- list view -->
+          <div
+            v-if="viewType === 'list' && !editMode"
+            class="flex items-center"
+          >
+            <img
+              class="favicon"
+              :src="
+                'https://s2.googleusercontent.com/s2/favicons?domain_url=' +
+                el.url
+              "
+              alt="favicon"
+            />
+            <p class="ml-1">
+              {{ el.title }}
+            </p>
+            <p class="ml-1">
+              {{ el.desc }}
+            </p>
+            <p class="ml-1">
+              {{ el.url }}
             </p>
           </div>
           <!-- 편집모드일때 -->
@@ -152,7 +201,7 @@
           </div>
           <input
             v-if="editMode"
-            class="font-bold border text-gray-600"
+            class="border text-gray-600"
             v-model="el.title"
           />
           <input
@@ -182,9 +231,9 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { supabase } from "../../util/supabase/supabase";
-import { btnContainer } from "../../util/style/classNames";
+import { btnContainer, viewTypes } from "../../util/style/classNames";
 import IconGirdView from "../assets/svg/IconGirdView.vue";
 import IconListView from "../assets/svg/IconListView.vue";
 import IconSimpleView from "../assets/svg/IconSimpleView.vue";
@@ -323,6 +372,10 @@ const tabViewType = (type) => {
   viewType.value = type;
   console.log(viewType.value);
 };
+
+const selectViewType = computed(() => {
+  return viewTypes[viewType.value] || "";
+});
 
 onMounted(() => {
   getUser();
