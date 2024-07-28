@@ -7,3 +7,7 @@ a {
 .placeholder-center::placeholder {
   text-align: center;
 }
+
+.border-grey {
+  border-color: rgb(180 180 180);
+}

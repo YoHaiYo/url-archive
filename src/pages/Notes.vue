@@ -46,7 +46,7 @@
         </div>
         <div class="flex items-center">
           <!-- View Menus -->
-          <div :class="btnContainer">
+          <div :class="btnContainer" class="border-2 border-violet-500">
             <IconSimpleView
               title="Simple View"
               @click="tabViewType('simple')"
@@ -70,7 +70,7 @@
             <p class="ml-2 cursor-pointer text-sm">Popular</p>
           </div>
           <!-- Btns : Edit / Share / Setting  -->
-          <div :class="btnContainer" class="ml-2">
+          <div :class="btnContainer" class="ml-2 border-2 border-violet-500">
             <font-awesome-icon
               v-if="!editMode"
               @click="() => {}"
@@ -118,13 +118,12 @@
       <!-- class="grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 max-w-4xl lg:max-w-6xl mx-auto mt-8 text-center gap-y-4 sm:gap-x-8 sm:text-left" -->
       <div :class="selectViewType">
         <!-- Card-->
-        <!-- :class="editMode ? '' : 'cursor-pointer'" -->
         <div
           @click="openLink(el.url)"
           v-for="el in notes"
           :key="el.id"
-          class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
-          :class="viewType === 'list' ? 'mt-3' : ''"
+          class="bg-white hover:bg-violet-100 border border-gray-300 hover:border-violet-300 rounded-md p-2 items-center justify-start"
+          :class="cardViewType"
           :style="editMode ? null : { cursor: 'pointer' }"
         >
           <!-- 평상시 -->
@@ -180,10 +179,10 @@
               "
               alt="favicon"
             />
-            <p class="ml-1">
+            <p class="ml-1 pr-2 border-r-2 border-grey">
               {{ el.title }}
             </p>
-            <p class="ml-1">
+            <p class="ml-1 pr-2 border-r-2 border-grey">
               {{ el.desc }}
             </p>
             <p class="ml-1">
@@ -248,7 +247,7 @@ const userEmail = ref(null);
 // 프론트변수
 const newUrl = ref("");
 const editMode = ref(false);
-const viewType = ref("grid");
+const viewType = ref("simple");
 
 // -------------------------- 함수 선언부 --------------------------
 
@@ -375,6 +374,11 @@ const tabViewType = (type) => {
 
 const selectViewType = computed(() => {
   return viewTypes[viewType.value] || "";
+});
+
+const cardViewType = computed(() => {
+  if (viewType.value === "list") return "mt-3";
+  if (viewType.value === "simple") return "m-1";
 });
 
 onMounted(() => {
