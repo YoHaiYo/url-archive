@@ -21,7 +21,7 @@
           @keydown.enter="addNote"
           v-model="newUrl"
           class="w-full md:w-1/2 rounded-tl rounded-bl p-1 border border-gray-400 text-gray-600"
-          placeholder="Add your multiple URLs at once!"
+          placeholder="Just copy and paste url and press Enter!"
           type="text"
         /><button
           @click="addNote"
@@ -238,12 +238,23 @@ const openLink = (url) => {
 
 // url 도메인 부분 추출
 const extractDomain = (url) => {
-  // URL에서 //와 첫 번째 . 사이의 부분을 추출
-  const match = url.match(/\/\/([^\.]+)/);
+  // //부터.까지 추출
+  let match = url.match(/\/\/([^\.]+)/);
   if (match && match[1]) {
     return match[1];
   }
-  return url.slice(0, 10); // URL 형식이 잘못된 경우 그냥 문자열끊어서 추출
+  // www.부터.까지 추출
+  match = url.match(/www\.([^\.]+)/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  // 처음부터 .까지 추출
+  match = url.match(/([^\.]+)/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  // 이것도 저것도 안걸릴때
+  return "invalid url";
 };
 
 onMounted(() => {
@@ -256,7 +267,7 @@ input {
   outline: none; /* 포커스 시 외곽선 제거 */
 }
 .favicon {
-  widows: 16px;
+  width: 16px;
   height: 16px;
 }
 </style>
