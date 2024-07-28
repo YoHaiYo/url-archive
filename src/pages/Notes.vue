@@ -47,13 +47,30 @@
         <div class="flex items-center">
           <!-- View Menus -->
           <div :class="btnContainer">
-            <IconGirdView title="Grid View" className="mr-2" />
-            <p>All</p>
-            <p>Popular</p>
+            <IconSimpleView
+              title="Simple View"
+              @click="tabViewType('simple')"
+              :color="viewType === 'simple' ? 'rgb(139 92 246)' : '#B3B3B3'"
+              className="cursor-pointer"
+            />
+            <IconGirdView
+              title="Grid View"
+              @click="tabViewType('grid')"
+              :color="viewType === 'grid' ? 'rgb(139 92 246)' : '#B3B3B3'"
+              className="ml-2 cursor-pointer"
+            />
+            <IconListView
+              title="List View"
+              @click="tabViewType('list')"
+              :color="viewType === 'list' ? 'rgb(139 92 246)' : '#B3B3B3'"
+              size="22"
+              className="ml-2 cursor-pointer"
+            />
+            <p class="ml-2 cursor-pointer text-sm">All</p>
+            <p class="ml-2 cursor-pointer text-sm">Popular</p>
           </div>
           <!-- Btns : Edit / Share / Setting  -->
-          <div :class="btnContainer">
-            <!-- setting icon -->
+          <div :class="btnContainer" class="ml-2">
             <font-awesome-icon
               v-if="!editMode"
               @click="() => {}"
@@ -62,7 +79,6 @@
               class="text-gray-400 cursor-pointer hover:text-violet-500"
               style="font-size: 20"
             />
-            <!-- share icon -->
             <font-awesome-icon
               v-if="!editMode"
               @click="() => {}"
@@ -71,7 +87,6 @@
               class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
               style="font-size: 20"
             />
-            <!-- edit icon -->
             <font-awesome-icon
               v-if="!editMode"
               @click="toggleEditMode"
@@ -80,7 +95,6 @@
               class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
               style="font-size: 20"
             />
-            <!-- save icon -->
             <font-awesome-icon
               v-if="editMode"
               @click="saveAllNotes"
@@ -89,7 +103,6 @@
               class="text-gray-400 cursor-pointer hover:text-violet-500"
               style="font-size: 20"
             />
-            <!-- cancle icon -->
             <font-awesome-icon
               v-if="editMode"
               @click="toggleEditMode"
@@ -98,20 +111,6 @@
               class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
               style="font-size: 24"
             />
-            <!-- <button
-            v-if="editMode"
-            class="save rounded bg-green-500 text-gray-100 px-2 ml-2"
-            @click="saveAllNotes"
-          >
-            Save
-          </button>
-          <button
-            v-if="editMode"
-            @click="toggleEditMode"
-            class="save rounded bg-yellow-500 text-gray-100 px-2 ml-2"
-          >
-            Cancle
-          </button> -->
           </div>
         </div>
       </div>
@@ -187,6 +186,8 @@ import { onMounted, ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 import { btnContainer } from "../../util/style/classNames";
 import IconGirdView from "../assets/svg/IconGirdView.vue";
+import IconListView from "../assets/svg/IconListView.vue";
+import IconSimpleView from "../assets/svg/IconSimpleView.vue";
 // -------------------------- 변수 선언부 --------------------------
 // 유틸변수
 const tableName = "notes"; // DB의 table명
@@ -198,6 +199,7 @@ const userEmail = ref(null);
 // 프론트변수
 const newUrl = ref("");
 const editMode = ref(false);
+const viewType = ref("grid");
 
 // -------------------------- 함수 선언부 --------------------------
 
@@ -315,6 +317,11 @@ const extractDomain = (url) => {
   }
   // 이것도 저것도 안걸릴때
   return "invalid url";
+};
+
+const tabViewType = (type) => {
+  viewType.value = type;
+  console.log(viewType.value);
 };
 
 onMounted(() => {
