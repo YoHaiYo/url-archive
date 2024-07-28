@@ -100,7 +100,7 @@
               @click="saveAllNotes"
               title="Save"
               icon="fa-floppy-disk"
-              class="text-gray-400 cursor-pointer hover:text-violet-500"
+              class="text-gray-400 cursor-pointer hover:text-green-500"
               style="font-size: 20"
             />
             <font-awesome-icon
@@ -108,7 +108,7 @@
               @click="toggleEditMode"
               title="Cancle"
               icon="fa-xmark"
-              class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
+              class="ml-3 text-gray-400 cursor-pointer hover:text-red-500"
               style="font-size: 24"
             />
           </div>
@@ -122,7 +122,7 @@
           @click="openLink(el.url)"
           v-for="el in notes"
           :key="el.id"
-          class="bg-white hover:bg-violet-100 border border-gray-300 hover:border-violet-300 rounded-md p-2 items-center justify-start"
+          class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
           :class="cardViewType"
           :style="editMode ? null : { cursor: 'pointer' }"
         >
@@ -190,29 +190,56 @@
             </p>
           </div>
           <!-- 편집모드일때 -->
-          <div v-if="editMode">
-            <button
+          <div
+            v-if="editMode"
+            :class="viewType === 'list' ? 'flex items-center' : ''"
+          >
+            <div class="flex justify-between items-center">
+              <img
+                class="favicon"
+                :class="viewType === 'list' ? 'mr-4' : ''"
+                :src="
+                  'https://s2.googleusercontent.com/s2/favicons?domain_url=' +
+                  el.url
+                "
+                alt="favicon"
+              />
+              <font-awesome-icon
+                v-if="viewType !== 'list'"
+                @click="deleteNote(el.id)"
+                title="Delete"
+                icon="fa-trash"
+                class="ml-3 text-gray-400 cursor-pointer hover:text-red-500"
+                style="font-size: 20"
+              />
+            </div>
+            <input
+              class="w-full border text-gray-600"
+              :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+              v-model="el.title"
+              placeholder="Title"
+            />
+            <input
+              :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+              class="w-full border text-gray-600"
+              v-model="el.desc"
+              placeholder="Description"
+            />
+            <input
+              :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+              class="w-full border text-gray-600"
+              v-model="el.url"
+              placeholder="URL"
+            />
+            <font-awesome-icon
+              v-if="viewType === 'list'"
               @click="deleteNote(el.id)"
-              class="bg-red-500 write rounded text-gray-100 px-2"
-            >
-              Delete
-            </button>
+              title="Delete"
+              icon="fa-trash"
+              class="ml-3 text-gray-400 cursor-pointer hover:text-red-500"
+              style="font-size: 20"
+            />
           </div>
-          <input
-            v-if="editMode"
-            class="border text-gray-600"
-            v-model="el.title"
-          />
-          <input
-            v-if="editMode"
-            class="mt-3 border text-gray-600"
-            v-model="el.desc"
-          />
-          <input
-            v-if="editMode"
-            class="mt-3 border text-gray-600"
-            v-model="el.url"
-          />
         </div>
         <!-- /Card-->
       </div>
@@ -377,8 +404,9 @@ const selectViewType = computed(() => {
 });
 
 const cardViewType = computed(() => {
-  if (viewType.value === "list") return "mt-3";
-  if (viewType.value === "simple") return "m-1";
+  const baseClass = viewType.value === "list" ? "mt-3" : "m-1";
+  const hoverClass = "hover:bg-violet-100 hover:border-violet-300";
+  return !editMode.value ? `${baseClass} ${hoverClass}` : baseClass;
 });
 
 onMounted(() => {
@@ -393,5 +421,8 @@ input {
 .favicon {
   width: 16px;
   height: 16px;
+}
+.editMode-off {
+  cursor: pointer;
 }
 </style>
