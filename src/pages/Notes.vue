@@ -44,54 +44,61 @@
             This page is not shared.
           </p>
         </div>
-        <!-- Btns : Edit / Share / Setting  -->
-        <div :class="btnContainer">
-          <!-- setting icon -->
-          <font-awesome-icon
-            v-if="!editMode"
-            @click="() => {}"
-            icon="fa-gear"
-            title="Setting"
-            class="text-gray-400 cursor-pointer hover:text-violet-500"
-            style="font-size: 20"
-          />
-          <!-- share icon -->
-          <font-awesome-icon
-            v-if="!editMode"
-            @click="() => {}"
-            title="Share"
-            icon="fa-share-nodes"
-            class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
-            style="font-size: 20"
-          />
-          <!-- edit icon -->
-          <font-awesome-icon
-            v-if="!editMode"
-            @click="toggleEditMode"
-            title="Edit"
-            icon="fa-pen-to-square"
-            class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
-            style="font-size: 20"
-          />
-          <!-- save icon -->
-          <font-awesome-icon
-            v-if="editMode"
-            @click="saveAllNotes"
-            title="Save"
-            icon="fa-floppy-disk"
-            class="text-gray-400 cursor-pointer hover:text-violet-500"
-            style="font-size: 20"
-          />
-          <!-- cancle icon -->
-          <font-awesome-icon
-            v-if="editMode"
-            @click="toggleEditMode"
-            title="Cancle"
-            icon="fa-xmark"
-            class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
-            style="font-size: 24"
-          />
-          <!-- <button
+        <div class="flex items-center">
+          <!-- View Menus -->
+          <div :class="btnContainer">
+            <IconGirdView title="Grid View" className="mr-2" />
+            <p>All</p>
+            <p>Popular</p>
+          </div>
+          <!-- Btns : Edit / Share / Setting  -->
+          <div :class="btnContainer">
+            <!-- setting icon -->
+            <font-awesome-icon
+              v-if="!editMode"
+              @click="() => {}"
+              icon="fa-gear"
+              title="Setting"
+              class="text-gray-400 cursor-pointer hover:text-violet-500"
+              style="font-size: 20"
+            />
+            <!-- share icon -->
+            <font-awesome-icon
+              v-if="!editMode"
+              @click="() => {}"
+              title="Share"
+              icon="fa-share-nodes"
+              class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
+              style="font-size: 20"
+            />
+            <!-- edit icon -->
+            <font-awesome-icon
+              v-if="!editMode"
+              @click="toggleEditMode"
+              title="Edit"
+              icon="fa-pen-to-square"
+              class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
+              style="font-size: 20"
+            />
+            <!-- save icon -->
+            <font-awesome-icon
+              v-if="editMode"
+              @click="saveAllNotes"
+              title="Save"
+              icon="fa-floppy-disk"
+              class="text-gray-400 cursor-pointer hover:text-violet-500"
+              style="font-size: 20"
+            />
+            <!-- cancle icon -->
+            <font-awesome-icon
+              v-if="editMode"
+              @click="toggleEditMode"
+              title="Cancle"
+              icon="fa-xmark"
+              class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
+              style="font-size: 24"
+            />
+            <!-- <button
             v-if="editMode"
             class="save rounded bg-green-500 text-gray-100 px-2 ml-2"
             @click="saveAllNotes"
@@ -105,6 +112,7 @@
           >
             Cancle
           </button> -->
+          </div>
         </div>
       </div>
       <!-- Card Container-->
@@ -178,6 +186,7 @@
 import { onMounted, ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 import { btnContainer } from "../../util/style/classNames";
+import IconGirdView from "../assets/svg/IconGirdView.vue";
 // -------------------------- 변수 선언부 --------------------------
 // 유틸변수
 const tableName = "notes"; // DB의 table명
