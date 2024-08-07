@@ -61,6 +61,8 @@ import { ref } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 import { useRouter } from "vue-router";
 
+const UITableName = "userui"; // ui관련 저장DB 테이블명
+
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
