@@ -49,19 +49,28 @@
           <div :class="btnContainer" class="border-2 border-violet-500">
             <IconSimpleView
               title="Simple View"
-              @click="tabViewType('simple')"
+              @click="
+                tabViewType('simple');
+                saveUIData('simple');
+              "
               :color="viewType === 'simple' ? 'rgb(139 92 246)' : '#B3B3B3'"
               className="cursor-pointer"
             />
             <IconGirdView
               title="Grid View"
-              @click="tabViewType('grid')"
+              @click="
+                tabViewType('grid');
+                saveUIData('grid');
+              "
               :color="viewType === 'grid' ? 'rgb(139 92 246)' : '#B3B3B3'"
               className="ml-2 cursor-pointer"
             />
             <IconListView
               title="List View"
-              @click="tabViewType('list')"
+              @click="
+                tabViewType('list');
+                saveUIData('list');
+              "
               :color="viewType === 'list' ? 'rgb(139 92 246)' : '#B3B3B3'"
               size="22"
               className="ml-2 cursor-pointer"
@@ -264,26 +273,28 @@ import IconGirdView from "../assets/svg/IconGirdView.vue";
 import IconListView from "../assets/svg/IconListView.vue";
 import IconSimpleView from "../assets/svg/IconSimpleView.vue";
 // -------------------------- 변수 선언부 --------------------------
-// 유틸변수
-const tableName = "notes"; // DB의 table명
 // DB변수
+const NoteTableName = "notes"; // 노트 저장DB 테이블명
+const UITableName = "userui"; // ui관련 저장DB 테이블명
+// 백엔드변수
 const notes = ref([]);
+const uiInfo = ref([]);
 const user = ref(null);
 const userId = ref(null);
 const userEmail = ref(null);
 // 프론트변수
 const newUrl = ref("");
 const editMode = ref(false);
-const viewType = ref("simple");
+const viewType = ref("");
 
 // -------------------------- 함수 선언부 --------------------------
 
 /// 백엔드 함수
-// 데이터가져오기
-async function getTableData() {
+// Read : 노트 데이터가져오기
+async function getNoteData() {
   // from('테이블명'), select('column명'), eq('column명', 'column내용')
   const { data } = await supabase
-    .from(tableName)
+    .from(NoteTableName)
     .select("*")
     .eq("useremail", userEmail.value);
 
@@ -294,6 +305,17 @@ async function getTableData() {
   );
   console.log("notes.value", notes.value);
 }
+// Read : UI 데이터가져오기
+async function getUIData() {
+  const { data } = await supabase
+    .from(UITableName)
+    .select("*")
+    .eq("useremail", userEmail.value);
+  uiInfo.value = data;
+  console.log("uiInfo : ", uiInfo.value);
+
+  viewType.value = uiInfo.value[0].viewtype; // 저장된 viewtype가져오기
+}
 
 const getUser = async () => {
   const localUser = await supabase.auth.getSession();
@@ -301,13 +323,14 @@ const getUser = async () => {
   userId.value = localUser.data.session.user.id;
   userEmail.value = localUser.data.session.user.email;
 
-  getTableData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
+  getNoteData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
+  getUIData();
 };
 
-// 노트 추가
+// Create : 노트 추가
 const addNote = async () => {
   const now = new Date().toISOString(); // timestamp용
-  const { error } = await supabase.from(tableName).insert({
+  const { error } = await supabase.from(NoteTableName).insert({
     useremail: userEmail.value,
     title: extractDomain(newUrl.value), // 해당 사이트 도메인부분만 추출하기
     desc: "add desc", // 해당 사이트 meta 태그에서 설명가져오기
@@ -318,10 +341,10 @@ const addNote = async () => {
     console.log("err : ", error);
   }
   newUrl.value = ""; // 입력창 초기화
-  getTableData(); // DB로 보낸후 프론트로 다시 가져오기
+  getNoteData(); // DB로 보낸후 프론트로 다시 가져오기
 };
 
-// 노트 전체저장
+// Update : 노트 전체저장
 const saveAllNotes = async () => {
   const updates = notes.value.map((note) => ({
     id: note.id,
@@ -332,7 +355,7 @@ const saveAllNotes = async () => {
 
   // upsert로 필요한 부분만 저장
   const { error } = await supabase
-    .from(tableName)
+    .from(NoteTableName)
     .upsert(updates, { onConflict: ["id"] }); // upsert 사용시 기준이 되는 필드임.
 
   if (error) {
@@ -342,10 +365,20 @@ const saveAllNotes = async () => {
     console.log("All notes have been saved.");
   }
 };
+// Update : UI데이터 저장
+const saveUIData = async (type) => {
+  const { error } = await supabase
+    .from(UITableName)
+    .update({ viewtype: type })
+    .eq("useremail", userEmail.value);
+  if (error) {
+    console.log("err : ", error);
+  }
+};
 
-// 노트 개별삭제
+// Delete : 노트 개별삭제
 const deleteNote = async (id) => {
-  const { error } = await supabase.from(tableName).delete().eq("id", id);
+  const { error } = await supabase.from(NoteTableName).delete().eq("id", id);
   if (error) {
     console.error("Error deleting url:", error.message);
   } else {

@@ -16,6 +16,7 @@
             />
             <label class="text-left text-md"> Password </label>
             <input
+              @keydown.enter="login"
               v-model="password"
               class="rounded-md px-4 py-2 bg-inherit border mb-6"
               type="password"
