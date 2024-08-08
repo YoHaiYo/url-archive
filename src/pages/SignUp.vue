@@ -44,7 +44,7 @@
               Already have an account?
               <router-link
                 to="/login"
-                class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                class="font-medium text-violet-400 hover:underline dark:text-primary-500"
               >
                 Login here
               </router-link>

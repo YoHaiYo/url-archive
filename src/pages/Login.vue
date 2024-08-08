@@ -36,7 +36,7 @@
               Don't you have an account yet?
               <router-link
                 to="/signup"
-                class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                class="font-medium text-violet-400 hover:underline dark:text-primary-500"
               >
                 Sign Up here
               </router-link>
@@ -47,7 +47,7 @@
               Forgot your password?
               <router-link
                 to="/forgotpw"
-                class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                class="font-medium text-violet-400 hover:underline dark:text-primary-500"
               >
                 Click here to reset it.
               </router-link>

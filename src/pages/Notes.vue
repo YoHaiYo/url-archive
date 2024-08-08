@@ -51,7 +51,7 @@
               title="Simple View"
               @click="
                 tabViewType('simple');
-                saveUIData('simple');
+                updateViewType('simple');
               "
               :color="viewType === 'simple' ? 'rgb(139 92 246)' : '#B3B3B3'"
               className="cursor-pointer"
@@ -60,7 +60,7 @@
               title="Grid View"
               @click="
                 tabViewType('grid');
-                saveUIData('grid');
+                updateViewType('grid');
               "
               :color="viewType === 'grid' ? 'rgb(139 92 246)' : '#B3B3B3'"
               className="ml-2 cursor-pointer"
@@ -69,14 +69,37 @@
               title="List View"
               @click="
                 tabViewType('list');
-                saveUIData('list');
+                updateViewType('list');
               "
               :color="viewType === 'list' ? 'rgb(139 92 246)' : '#B3B3B3'"
               size="22"
               className="ml-2 cursor-pointer"
             />
             <p class="ml-2 cursor-pointer text-sm">All</p>
-            <p class="ml-2 cursor-pointer text-sm">Popular</p>
+            <p
+              @click="
+                tabSortType('popular');
+                updateSortType('popular');
+              "
+              class="ml-2 cursor-pointer text-sm"
+              :class="
+                sortType === 'popular' ? 'text-violet-500 font-bold' : null
+              "
+            >
+              Popular
+            </p>
+            <p
+              @click="
+                tabSortType('recent');
+                updateSortType('recent');
+              "
+              class="ml-2 cursor-pointer text-sm"
+              :class="
+                sortType === 'recent' ? 'text-violet-500 font-bold' : null
+              "
+            >
+              Recent
+            </p>
           </div>
           <!-- Btns : Edit / Share / Setting  -->
           <div :class="btnContainer" class="ml-2 border-2 border-violet-500">
@@ -128,12 +151,23 @@
       <div :class="selectViewType">
         <!-- Card-->
         <div
-          @click="openLink(el.url)"
-          v-for="el in notes"
+          @click="
+            openLink(el.url);
+            updateClickNum(el, idx);
+          "
+          v-for="(el, idx) in notes"
           :key="el.id"
           class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
           :class="cardViewType"
           :style="editMode ? null : { cursor: 'pointer' }"
+          :title="
+            el.url +
+            '\n' +
+            el.clicknum +
+            ' times cliked' +
+            '\n' +
+            el.writetime.slice(0, 10)
+          "
         >
           <!-- 평상시 -->
           <!-- simple view -->
@@ -286,6 +320,7 @@ const userEmail = ref(null);
 const newUrl = ref("");
 const editMode = ref(false);
 const viewType = ref("");
+const sortType = ref("");
 
 // -------------------------- 함수 선언부 --------------------------
 
@@ -298,11 +333,11 @@ const getUser = async () => {
   userEmail.value = localUser.data.session.user.email;
 
   getNoteData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
-  getUIData();
-  addUIdata();
+  addUIdata(); // 유저ui정보 없을때 초기값 추가
+  getUIData(); // 유저ui정보 가져오기
 };
 
-// Read : 노트 데이터가져오기
+// Read : ★노트 데이터가져오기 / 콜백함수로 가장 많이사용함.
 async function getNoteData() {
   // from('테이블명'), select('column명'), eq('column명', 'column내용')
   const { data } = await supabase
@@ -310,13 +345,21 @@ async function getNoteData() {
     .select("*")
     .eq("useremail", userEmail.value);
 
-  // writetime 기준으로 최신 순으로 정렬
-  // notes.value = data;
-  notes.value = data.sort(
-    (a, b) => new Date(b.writetime) - new Date(a.writetime)
-  );
+  if (sortType.value === "recent") {
+    // writetime 기준으로 최신 순으로 정렬
+    notes.value = data.sort(
+      (a, b) => new Date(b.writetime) - new Date(a.writetime)
+    );
+  } else if (sortType.value === "popular") {
+    // 많이 클릭된 순으로 정렬
+    notes.value = data.sort((a, b) => b.clicknum - a.clicknum);
+  } else {
+    // 기본정렬 : 기본적으로 supabase는 DB수정된걸 나중으로 보여줌.
+    notes.value = data;
+  }
   console.log("notes.value", notes.value);
 }
+
 // Read : UI 데이터가져오기
 async function getUIData() {
   const { data } = await supabase
@@ -327,6 +370,7 @@ async function getUIData() {
   console.log("uiInfo : ", uiInfo.value);
 
   viewType.value = uiInfo.value[0].viewtype; // 저장된 viewtype가져오기
+  sortType.value = uiInfo.value[0].sorttype; // 저장된 sorttype가져오기
 }
 
 // Create : 노트 추가
@@ -398,11 +442,41 @@ const saveAllNotes = async () => {
     console.log("All notes have been saved.");
   }
 };
-// Update : UI데이터 저장
-const saveUIData = async (type) => {
+
+// Update : 클릭시 조회수 증가
+const updateClickNum = async (el, idx) => {
+  const now = new Date().toISOString(); // timestamp용
+  const { data, error } = await supabase
+    .from(NoteTableName)
+    // idx로 클릭한 카드 찾아서 해당 해당의 clicknum 증가시키기
+    .update({
+      clicknum: notes.value[idx].clicknum + 1,
+      writetime: now,
+    })
+    .eq("id", el.id);
+
+  if (error) {
+    console.log("err : ", error);
+  } else {
+    getNoteData(); // 재정렬
+  }
+};
+
+// Update : UI데이터:ViewType 저장
+const updateViewType = async (type) => {
   const { error } = await supabase
     .from(UITableName)
     .update({ viewtype: type })
+    .eq("useremail", userEmail.value);
+  if (error) {
+    console.log("err : ", error);
+  }
+};
+// Update : UI데이터:SortType 저장
+const updateSortType = async (type) => {
+  const { error } = await supabase
+    .from(UITableName)
+    .update({ sorttype: type })
     .eq("useremail", userEmail.value);
   if (error) {
     console.log("err : ", error);
@@ -460,9 +534,18 @@ const extractDomain = (url) => {
   return "invalid url";
 };
 
+// viewtype 변경
 const tabViewType = (type) => {
   viewType.value = type;
   console.log(viewType.value);
+};
+
+// sorttype 변경
+const tabSortType = (type) => {
+  sortType.value = type;
+  console.log(sortType.value);
+
+  getNoteData(); // 타입변경 후 재정렬
 };
 
 const selectViewType = computed(() => {
