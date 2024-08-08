@@ -4,6 +4,7 @@ import Notes from "../pages/Notes.vue";
 import AuthTest from "../pages/AuthTest.vue";
 import SignUp from "../pages/SignUp.vue";
 import Login from "../pages/Login.vue";
+import ForgotPW from "../pages/ForgotPW.vue";
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login,
+  },
+  {
+    path: "/forgotpw",
+    name: "ForgotPW",
+    component: ForgotPW,
   },
 ];
 

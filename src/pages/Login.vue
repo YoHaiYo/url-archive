@@ -41,6 +41,17 @@
                 Sign Up here
               </router-link>
             </p>
+            <p
+              class="text-center text-sm font-light text-gray-500 dark:text-gray-400"
+            >
+              Forgot your password?
+              <router-link
+                to="/forgotpw"
+                class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+              >
+                Click here to reset it.
+              </router-link>
+            </p>
           </article>
         </div>
       </div>
@@ -65,6 +76,7 @@ const login = async () => {
   });
   if (error) {
     console.log(error.message);
+    alert("Login failed : please check your email or password.");
   } else {
     console.log("Login Successed ! ");
     // router.push("/notes");

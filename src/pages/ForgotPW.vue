@@ -4,6 +4,7 @@
       <div class="flex justify-center flex-wrap -mx-4">
         <div class="w-full md:w-1/2 lg:w-1/3 px-4">
           <article
+            v-if="!userEmail"
             class="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
           >
             <label class="text-left text-md"> Email </label>
@@ -14,7 +15,18 @@
               placeholder="you@example.com"
               required
             />
-            <label class="text-left text-md"> Password </label>
+            <button
+              @click="sendPasswordRecoveryEmail"
+              class="bg-violet-500 text-violet-50 rounded-md px-4 py-2 text-foreground mb-2"
+            >
+              Send Password Recovery Email
+            </button>
+          </article>
+          <article
+            v-if="userEmail"
+            class="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
+          >
+            <label class="text-left text-md"> Password to be changed </label>
             <input
               v-model="password"
               class="rounded-md px-4 py-2 bg-inherit border mb-6"
@@ -33,22 +45,11 @@
               required
             />
             <button
-              @click="createAccount"
+              @click="resetPassword"
               class="bg-violet-500 text-violet-50 rounded-md px-4 py-2 text-foreground mb-2"
             >
-              Create Account
+              Reset Password
             </button>
-            <p
-              class="text-center text-sm font-light text-gray-500 dark:text-gray-400"
-            >
-              Already have an account?
-              <router-link
-                to="/login"
-                class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-              >
-                Login here
-              </router-link>
-            </p>
           </article>
         </div>
       </div>
@@ -57,44 +58,61 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { supabase } from "../../util/supabase/supabase";
 import { useRouter } from "vue-router";
 
-const UITableName = "userui"; // ui관련 저장DB 테이블명
+const userEmail = ref(null); // 세션에서 가져옴.
 
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 const name = ref("");
 
-const createAccount = async () => {
-  console.log("createAccount");
+// 세션에서 user 정보 가져오기
+const getUser = async () => {
+  const localUser = await supabase.auth.getSession();
+  userEmail.value = localUser.data.session.user.email;
+  console.log("userEmail.value", userEmail.value);
+};
+
+const sendPasswordRecoveryEmail = async () => {
+  let { data, error } = await supabase.auth.resetPasswordForEmail(email.value);
+
+  if (error) {
+    console.error("Error sending password reset email:", error);
+    alert(error);
+  } else {
+    alert("Password reset email sent. Please check your email");
+    console.log("Password reset email sent:", data);
+  }
+};
+
+const resetPassword = async () => {
+  console.log("ForgotPW");
 
   // 비번과 비번확인 다를때 경고
   if (password.value !== confirmPassword.value) {
     alert("Passwords do not match. Please check your password.");
   } else {
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.updateUser({
       email: email.value,
       password: password.value,
-      // user.user_metadata 객체 아래로 자유롭게 데이터추가 가능
-      options: {
-        data: {
-          first_name: name.value,
-        },
-      },
     });
+
     if (error) {
       console.log(error.message);
       alert(error.message);
     } else {
-      // 보낸이 : noreply@mail.app.supabase.io
-      alert("회원가입 성공! 이메일을 확인하세요.");
-      console.log(data);
+      alert("You have successfully changed your password !");
+      window.location.href = "/notes";
     }
   }
 };
+
+onMounted(() => {
+  getUser();
+});
 </script>
 
 <style scoped lang="scss"></style>
