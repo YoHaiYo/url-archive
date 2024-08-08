@@ -290,6 +290,18 @@ const viewType = ref("");
 // -------------------------- 함수 선언부 --------------------------
 
 /// 백엔드 함수
+// 세션에서 user 정보 가져오기
+const getUser = async () => {
+  const localUser = await supabase.auth.getSession();
+  user.value = localUser.data.session.user;
+  userId.value = localUser.data.session.user.id;
+  userEmail.value = localUser.data.session.user.email;
+
+  getNoteData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
+  getUIData();
+  addUIdata();
+};
+
 // Read : 노트 데이터가져오기
 async function getNoteData() {
   // from('테이블명'), select('column명'), eq('column명', 'column내용')
@@ -317,16 +329,6 @@ async function getUIData() {
   viewType.value = uiInfo.value[0].viewtype; // 저장된 viewtype가져오기
 }
 
-const getUser = async () => {
-  const localUser = await supabase.auth.getSession();
-  user.value = localUser.data.session.user;
-  userId.value = localUser.data.session.user.id;
-  userEmail.value = localUser.data.session.user.email;
-
-  getNoteData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
-  getUIData();
-};
-
 // Create : 노트 추가
 const addNote = async () => {
   const now = new Date().toISOString(); // timestamp용
@@ -342,6 +344,37 @@ const addNote = async () => {
   }
   newUrl.value = ""; // 입력창 초기화
   getNoteData(); // DB로 보낸후 프론트로 다시 가져오기
+};
+
+// Create : 유저 UI 정보 없을때만 초기값 추가
+const addUIdata = async () => {
+  const { data, error } = await supabase
+    .from(UITableName)
+    .select("*")
+    .eq("useremail", userEmail.value);
+
+  if (error) {
+    console.log("Error fetching data: ", error);
+    return;
+  }
+
+  if (data.length > 0) {
+    console.log(
+      `해당 유저의 UI 데이터가 있습니다. 해당유저 이메일: ${data[0].useremail}`
+    );
+  } else {
+    console.log(
+      "해당 유저의 UI 데이터가 없습니다. 초기값을 추가하고 페이지를 새로 로드합니다."
+    );
+    const { error: insertError } = await supabase.from(UITableName).insert({
+      useremail: userEmail.value,
+      viewtype: "grid",
+    });
+    window.location.reload();
+    if (insertError) {
+      console.log("Error inserting data: ", insertError);
+    }
+  }
 };
 
 // Update : 노트 전체저장
