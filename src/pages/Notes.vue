@@ -75,7 +75,8 @@
               size="22"
               className="ml-2 cursor-pointer"
             />
-            <p class="ml-2 cursor-pointer text-sm">All</p>
+            <!-- 카테고리 들어갈 자리 -->
+            <!-- <p class="ml-2 cursor-pointer text-sm">All</p> -->
             <p
               @click="
                 tabSortType('popular');
