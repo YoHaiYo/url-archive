@@ -77,6 +77,53 @@
             />
             <!-- 카테고리 들어갈 자리 -->
             <!-- <p class="ml-2 cursor-pointer text-sm">All</p> -->
+            <Menu as="div" class="relative inline-block text-left ml-2">
+              <div>
+                <MenuButton
+                  class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-violet-50"
+                >
+                  Category
+                  <font-awesome-icon
+                    icon="fa-chevron-down"
+                    class="text-gray-400 mt-1"
+                    style="font-size: 16"
+                  />
+                </MenuButton>
+              </div>
+
+              <transition
+                enter-active-class="transition ease-out duration-100"
+                enter-from-class="transform opacity-0 scale-95"
+                enter-to-class="transform opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75"
+                leave-from-class="transform opacity-100 scale-100"
+                leave-to-class="transform opacity-0 scale-95"
+              >
+                <MenuItems
+                  class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                >
+                  <div class="py-1">
+                    <MenuItem
+                      v-slot="{ active }"
+                      v-for="(el, idx) in categoryArr"
+                      :key="idx"
+                    >
+                      <a
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                        >{{ el }}</a
+                      >
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </transition>
+            </Menu>
+
             <p
               @click="
                 tabSortType('popular');
@@ -302,6 +349,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { supabase } from "../../util/supabase/supabase";
 import { btnContainer, viewTypes } from "../../util/style/classNames";
 import IconGirdView from "../assets/svg/IconGirdView.vue";
@@ -322,6 +370,7 @@ const newUrl = ref("");
 const editMode = ref(false);
 const viewType = ref("");
 const sortType = ref("");
+const categoryArr = ref(["Design", "Develop", "AI"]);
 
 // -------------------------- 함수 선언부 --------------------------
 
