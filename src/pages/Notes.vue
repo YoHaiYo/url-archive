@@ -75,14 +75,13 @@
               size="22"
               className="ml-2 cursor-pointer"
             />
-            <!-- 카테고리 들어갈 자리 -->
-            <!-- <p class="ml-2 cursor-pointer text-sm">All</p> -->
+            <!-- 카테고리 드롭다운-->
             <Menu as="div" class="relative inline-block text-left ml-2">
               <div>
                 <MenuButton
                   class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-violet-50"
                 >
-                  Category
+                  {{ categoryArr[categoryArrIndex] }}
                   <font-awesome-icon
                     icon="fa-chevron-down"
                     class="text-gray-400 mt-1"
@@ -100,14 +99,10 @@
                 leave-to-class="transform opacity-0 scale-95"
               >
                 <MenuItems
-                  class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  class="absolute right-0 w-auto z-10 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
                   <div class="py-1">
-                    <MenuItem
-                      v-slot="{ active }"
-                      v-for="(el, idx) in categoryArr"
-                      :key="idx"
-                    >
+                    <MenuItem v-slot="{ active }">
                       <a
                         href="#"
                         :class="[
@@ -116,7 +111,111 @@
                             : 'text-gray-700',
                           'block px-4 py-2 text-sm',
                         ]"
+                        >All</a
+                      >
+                    </MenuItem>
+                    <MenuItem
+                      v-slot="{ active }"
+                      v-for="(el, idx) in categoryArr"
+                      :key="idx"
+                    >
+                      <a
+                        @click="categoryArrIndex = idx"
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
                         >{{ el }}</a
+                      >
+                    </MenuItem>
+
+                    <MenuItem v-slot="{ active }">
+                      <a
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                      >
+                        <font-awesome-icon
+                          icon="fa-add"
+                          class="text-gray-500"
+                          style="font-size: 15"
+                        />
+                        add more
+                      </a>
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </transition>
+            </Menu>
+
+            <!-- sortType 드롭다운 (recent, popular) -->
+            <Menu
+              as="div"
+              class="relative inline-block text-left ml-2"
+              title="filter type"
+            >
+              <div>
+                <MenuButton
+                  class="text-violet-500 inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-violet-50"
+                >
+                  {{ sortType }}
+                  <font-awesome-icon
+                    icon="fa-chevron-down"
+                    class="text-gray-400 mt-1"
+                    style="font-size: 16"
+                  />
+                </MenuButton>
+              </div>
+
+              <transition
+                enter-active-class="transition ease-out duration-100"
+                enter-from-class="transform opacity-0 scale-95"
+                enter-to-class="transform opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75"
+                leave-from-class="transform opacity-100 scale-100"
+                leave-to-class="transform opacity-0 scale-95"
+              >
+                <MenuItems
+                  class="absolute right-0 z-10 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                >
+                  <div class="py-1">
+                    <MenuItem v-slot="{ active }">
+                      <a
+                        @click="
+                          tabSortType('popular');
+                          updateSortType('popular');
+                        "
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                        >popular</a
+                      >
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                      <a
+                        @click="
+                          tabSortType('recent');
+                          updateSortType('recent');
+                        "
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                        >recent</a
                       >
                     </MenuItem>
                   </div>
@@ -175,6 +274,7 @@
               class="ml-3 text-gray-400 cursor-pointer hover:text-violet-500"
               style="font-size: 20"
             />
+            <!-- 저장 / 취소 버튼 -->
             <font-awesome-icon
               v-if="editMode"
               @click="saveAllNotes"
@@ -234,6 +334,9 @@
             <p class="ml-1">
               {{ el.title }}
             </p>
+            <p class="ml-1">
+              {{ el.category }}
+            </p>
           </div>
           <!-- grid view -->
           <div
@@ -255,6 +358,9 @@
             </div>
             <p class="ml-1">
               {{ el.desc }}
+            </p>
+            <p class="ml-1">
+              {{ el.category }}
             </p>
           </div>
           <!-- list view -->
@@ -278,6 +384,9 @@
             </p>
             <p class="ml-1">
               {{ el.url }}
+            </p>
+            <p class="ml-1">
+              {{ el.category }}
             </p>
           </div>
           <!-- 편집모드일때 -->
@@ -321,6 +430,12 @@
               class="w-full border text-gray-600"
               v-model="el.url"
               placeholder="URL"
+            />
+            <input
+              :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+              class="w-full border text-gray-600"
+              v-model="el.category"
+              placeholder="Category"
             />
             <font-awesome-icon
               v-if="viewType === 'list'"
@@ -370,7 +485,8 @@ const newUrl = ref("");
 const editMode = ref(false);
 const viewType = ref("");
 const sortType = ref("");
-const categoryArr = ref(["Design", "Develop", "AI"]);
+const categoryArr = ref(["Design", "Develop", "AI", "ssssssssssssssss"]);
+const categoryArrIndex = ref(0);
 
 // -------------------------- 함수 선언부 --------------------------
 
@@ -432,6 +548,7 @@ const addNote = async () => {
     desc: "add desc", // 해당 사이트 meta 태그에서 설명가져오기
     url: newUrl.value,
     writetime: now, // timestamptz
+    category: "all",
   });
   if (error) {
     console.log("err : ", error);
@@ -478,6 +595,7 @@ const saveAllNotes = async () => {
     title: note.title,
     desc: note.desc,
     url: note.url,
+    category: note.category,
   }));
 
   // upsert로 필요한 부분만 저장
@@ -496,14 +614,18 @@ const saveAllNotes = async () => {
 // Update : 클릭시 조회수 증가
 const updateClickNum = async (el, idx) => {
   const now = new Date().toISOString(); // timestamp용
-  const { data, error } = await supabase
-    .from(NoteTableName)
-    // idx로 클릭한 카드 찾아서 해당 해당의 clicknum 증가시키기
-    .update({
-      clicknum: notes.value[idx].clicknum + 1,
-      writetime: now,
-    })
-    .eq("id", el.id);
+
+  // 편집모드가 꺼져 있을 때만 조회수업데이트되게하기
+  if (!editMode.value) {
+    const { data, error } = await supabase
+      .from(NoteTableName)
+      // idx로 클릭한 카드 찾아서 해당 해당의 clicknum 증가시키기
+      .update({
+        clicknum: notes.value[idx].clicknum + 1,
+        writetime: now,
+      })
+      .eq("id", el.id);
+  }
 
   if (error) {
     console.log("err : ", error);
