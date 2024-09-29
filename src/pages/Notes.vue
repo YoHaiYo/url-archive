@@ -173,7 +173,7 @@
             >
               <div>
                 <MenuButton
-                  class="text-violet-500 inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-violet-50"
+                  class="text-black-500 inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-violet-50"
                 >
                   {{ sortType }}
                   <font-awesome-icon
@@ -607,24 +607,29 @@ async function getNoteData() {
       notes.value = data.sort(
         (a, b) => new Date(b.writetime) - new Date(a.writetime)
       );
+      categoryNowSelected.value = "All";
       break;
     case "Least Recent":
       // writetime 기준으로 오래된 순으로 정렬
       notes.value = data.sort(
         (a, b) => new Date(a.writetime) - new Date(b.writetime)
       );
+      categoryNowSelected.value = "All";
       break;
     case "Most Popular":
       // 많이 클릭된 순으로 정렬
       notes.value = data.sort((a, b) => b.clicknum - a.clicknum);
+      categoryNowSelected.value = "All";
       break;
     case "Least Popular":
       // 적게 클릭된 순으로 정렬
       notes.value = data.sort((a, b) => a.clicknum - b.clicknum);
+      categoryNowSelected.value = "All";
       break;
     default:
       // 기본정렬 : 기본적으로 supabase는 DB수정된걸 나중으로 보여줌.
       notes.value = data;
+      categoryNowSelected.value = "All";
       break;
   }
   console.log("notes.value", notes.value);
