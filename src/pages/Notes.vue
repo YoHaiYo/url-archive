@@ -481,18 +481,27 @@
           :key="idx"
           class="flex justify-between items-center border-b border-gray-300 mb-2"
         >
-          <input type="text" :value="el.category" :placeholder="el.category" />
+          <!-- 입력값이 변경될 때마다 업데이트 -->
+          <input
+            class="w-full"
+            type="text"
+            v-model="el.category"
+            @input="updateCategory(el.id, el.category)"
+            :placeholder="el.category"
+          />
           <font-awesome-icon
+            @click="deleteCategory(el.id)"
             icon="fa-solid fa-trash-can"
-            class="text-gray-500 cusor-pointer"
+            class="text-gray-500 cusor-pointer hover:text-red-500"
             style="font-size: 16"
+            title="Delete this category immediately upon click."
           />
         </li>
       </ul>
 
       <div class="flex items-center">
         <input
-          v-model="newCategory"
+          v-model="categoryText"
           type="text"
           placeholder="Add new category"
           class="border border-gray-300 rounded w-full py-1 mr-1"
@@ -529,6 +538,7 @@ import IconSimpleView from "../assets/svg/IconSimpleView.vue";
 // DB변수
 const NoteTableName = "notes"; // 노트 저장DB 테이블명
 const UITableName = "userui"; // ui관련 저장DB 테이블명
+const CategoryTableName = "usercategory"; // ui관련 저장DB 테이블명
 // 백엔드변수
 const notes = ref([]);
 const uiInfo = ref([]);
@@ -543,6 +553,7 @@ const sortType = ref("");
 const categoryArr = ref(["Design", "Develop", "AI", "ETC"]);
 const categoryArrIndex = ref(0);
 const categoryList = ref([]);
+const categoryText = ref("");
 const isModalOpen = ref(true);
 
 // -------------------------- 함수 선언부 --------------------------
@@ -615,7 +626,7 @@ async function getUIData() {
 // Read : 유저카테고리 데이터가져오기
 async function getCategoryData() {
   const { data } = await supabase
-    .from("usercategory")
+    .from(CategoryTableName)
     .select("*")
     .eq("useremail", userEmail.value);
   categoryList.value = data;
@@ -638,6 +649,19 @@ const addNote = async () => {
   }
   newUrl.value = ""; // 입력창 초기화
   getNoteData(); // DB로 보낸후 프론트로 다시 가져오기
+};
+
+// Create : 카테고리 추가
+const addCategory = async () => {
+  const { error } = await supabase.from(CategoryTableName).insert({
+    useremail: userEmail.value,
+    category: categoryText.value,
+  });
+  if (error) {
+    console.log("err : ", error);
+  }
+  categoryText.value = ""; // 입력창 초기화
+  getCategoryData();
 };
 
 // Create : 유저 UI 정보 없을때만 초기값 추가
@@ -737,6 +761,22 @@ const updateSortType = async (type) => {
     console.log("err : ", error);
   }
 };
+// Update : 카테고리 업데이트
+const updateCategory = async (id, newCategory) => {
+  const { error } = await supabase
+    .from(CategoryTableName)
+    .update({ category: newCategory })
+    .eq("id", id);
+  if (error) {
+    console.error("Error updating category:", error.message);
+  } else {
+    // 카테고리 목록을 업데이트하여 UI에 반영
+    const index = categoryList.value.findIndex((el) => el.id === id);
+    if (index !== -1) {
+      categoryList.value[index].category = newCategory; // UI 업데이트
+    }
+  }
+};
 
 // Delete : 노트 개별삭제
 const deleteNote = async (id) => {
@@ -746,6 +786,19 @@ const deleteNote = async (id) => {
   } else {
     notes.value = notes.value.filter((url) => url.id !== id);
   }
+};
+// Delete : 카테고리 개별삭제
+const deleteCategory = async (id) => {
+  const { error } = await supabase
+    .from(CategoryTableName)
+    .delete()
+    .eq("id", id);
+  if (error) {
+    console.error("Error deleting :", error.message);
+  } else {
+    categoryList.value = categoryList.value.filter((el) => el.id !== id);
+  }
+  getCategoryData();
 };
 
 /// 프론트 함수
