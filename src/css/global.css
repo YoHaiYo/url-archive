@@ -11,3 +11,6 @@ a {
 .border-grey {
   border-color: rgb(180 180 180);
 }
+.cusor-pointer {
+  cursor: pointer;
+}

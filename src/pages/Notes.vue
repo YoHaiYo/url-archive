@@ -135,6 +135,7 @@
                     <MenuItem v-slot="{ active }">
                       <a
                         href="#"
+                        @click="openCategoryModal"
                         :class="[
                           active
                             ? 'bg-violet-100 text-gray-900'
@@ -460,6 +461,53 @@
     </div>
   </section>
 
+  <!-- 카테고리 모달 -->
+  <div
+    v-if="isModalOpen"
+    class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
+  >
+    <div class="bg-white rounded-lg p-6 w-80 relative">
+      <font-awesome-icon
+        @click="closeCategoryModal"
+        icon="fa-solid fa-xmark"
+        class="my-cancle-btn text-gray-700 cusor-pointer"
+        style="font-size: 16"
+      />
+      <h2 class="text-lg font-bold mb-4">Manage Categories</h2>
+
+      <ul>
+        <li
+          v-for="(el, idx) in categoryList"
+          :key="idx"
+          class="flex justify-between items-center border-b border-gray-300 mb-2"
+        >
+          <input type="text" :value="el.category" :placeholder="el.category" />
+          <font-awesome-icon
+            icon="fa-solid fa-trash-can"
+            class="text-gray-500 cusor-pointer"
+            style="font-size: 16"
+          />
+        </li>
+      </ul>
+
+      <div class="flex items-center">
+        <input
+          v-model="newCategory"
+          type="text"
+          placeholder="Add new category"
+          class="border border-gray-300 rounded w-full py-1 mr-1"
+        />
+        <button
+          @click="addCategory"
+          class="bg-violet-500 py-1 px-2 text-white rounded"
+        >
+          Add
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- //카테고리 모달 -->
+
   <section
     v-if="!userId"
     class="flex justify-center text-xl"
@@ -494,6 +542,8 @@ const viewType = ref("");
 const sortType = ref("");
 const categoryArr = ref(["Design", "Develop", "AI", "ETC"]);
 const categoryArrIndex = ref(0);
+const categoryList = ref([]);
+const isModalOpen = ref(true);
 
 // -------------------------- 함수 선언부 --------------------------
 
@@ -508,6 +558,7 @@ const getUser = async () => {
   getNoteData(); // getUser에서 userEmail을 가져와야 해당유저의 저장데이터를 가져오게 설계함.
   addUIdata(); // 유저ui정보 없을때 초기값 추가
   getUIData(); // 유저ui정보 가져오기
+  getCategoryData();
 };
 
 // Read : ★노트 데이터가져오기 / 콜백함수로 가장 많이사용함.
@@ -560,6 +611,15 @@ async function getUIData() {
 
   viewType.value = uiInfo.value[0].viewtype; // 저장된 viewtype가져오기
   sortType.value = uiInfo.value[0].sorttype; // 저장된 sorttype가져오기
+}
+// Read : 유저카테고리 데이터가져오기
+async function getCategoryData() {
+  const { data } = await supabase
+    .from("usercategory")
+    .select("*")
+    .eq("useremail", userEmail.value);
+  categoryList.value = data;
+  console.log("usercategory : ", categoryList.value);
 }
 
 // Create : 노트 추가
@@ -752,7 +812,14 @@ const cardViewType = computed(() => {
   const hoverClass = "hover:bg-violet-100 hover:border-violet-300";
   return !editMode.value ? `${baseClass} ${hoverClass}` : baseClass;
 });
+/// 카테고리 관련
+const openCategoryModal = () => {
+  isModalOpen.value = true;
+};
 
+const closeCategoryModal = () => {
+  isModalOpen.value = false;
+};
 onMounted(() => {
   getUser();
 });
@@ -772,5 +839,11 @@ input {
 // 카테고리 드롭다운
 #headlessui-menu-items-2 {
   min-width: 130px !important;
+}
+// 카테고리 편집
+.my-cancle-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 </style>
