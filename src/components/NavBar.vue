@@ -8,11 +8,7 @@ md: 기준으로 반응형 처리함.
       <!-- 로고 -->
       <div class="md:w-1/3">
         <router-link class="block max-w-max" to="/">
-          <img
-            class="h-8"
-            src="../assets/svg/flex-ui-violet-light.svg"
-            alt=""
-          />
+          <img :src="logoSrc" alt="logo" />
         </router-link>
       </div>
       <!-- 네비메뉴 -->
@@ -88,11 +84,7 @@ md: 기준으로 반응형 처리함.
       <nav class="relative p-6 h-full overflow-y-auto">
         <div class="flex flex-col justify-between h-full">
           <a class="inline-block" href="#">
-            <img
-              class="h-8"
-              src="../assets/svg/flex-ui-violet-light.svg"
-              alt=""
-            />
+            <img :src="logoSrc" alt="logo" />
           </a>
           <ul class="py-6 h-full flex flex-col justify-start">
             <li
@@ -174,15 +166,18 @@ import { supabase } from "../../util/supabase/supabase";
 import { logout } from "../../util/supabase/authUtils";
 import { getSessionData } from "../../util/supabase/authUtils";
 
-const isMenuOpen = ref(false);
-const user = ref(null);
+// 로고 경로 관리
+const logoSrc = ref("/urlachive-logo.png");
 // 네비바 메뉴는 여기서 관리
 const navItems = ref([
-  { text: "Product", link: "#" },
-  { text: "Features", link: "#" },
-  { text: "Pricing", link: "#" },
-  { text: "Resources", link: "#" },
+  // { text: "Product", link: "#" },
+  // { text: "Features", link: "#" },
+  // { text: "Pricing", link: "#" },
+  // { text: "Resources", link: "#" },
 ]);
+
+const isMenuOpen = ref(false);
+const user = ref(null);
 
 onMounted(async () => {
   user.value = await getSessionData();

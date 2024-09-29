@@ -1,5 +1,5 @@
 <template>
-  <section class="py-24 bg-white overflow-hidden">
+  <section class="py-24 bg-white overflow-hidden" style="min-height: 60vh">
     <div class="container px-4 mx-auto">
       <div class="flex justify-center flex-wrap -mx-4">
         <div class="w-full md:w-1/2 lg:w-1/3 px-4">

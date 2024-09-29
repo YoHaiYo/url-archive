@@ -5,6 +5,7 @@
     style="
       background-image: url('/svg/pattern-white.svg');
       background-position: center center;
+      min-height: 100vh;
     "
   >
     <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -12,11 +13,11 @@
         <h2
           class="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl xl:text-4xl mb-6"
         >
-          {{ userEmail }}'s Notes
+          {{ userEmail }}'s URLs
         </h2>
         <!-- <p class="mb-4 text-gray-900">Please add url to make a card!</p> -->
       </div>
-      <div class="flex mb-1 p-3 justify-center">
+      <div class="flex p-3 justify-center">
         <input
           @keydown.enter="addNote"
           v-model="newUrl"
@@ -36,17 +37,17 @@
           <!-- Add -->
         </button>
       </div>
-      <div class="flex justify-between">
+      <div class="flex justify-between flex-wrap">
         <div
-          class="h-10 px-2.5 py-2 bg-violet-200 border-t border-b border-violet-500 justify-center items-center gap-2.5 inline-flex"
+          class="h-10 mb-2 px-2.5 py-2 bg-violet-200 border-t border-b border-violet-500 justify-center items-center gap-2.5 inline-flex"
         >
           <p class="text-center text-violet-500 font-normal">
             This page is not shared.
           </p>
         </div>
-        <div class="flex items-center">
+        <div class="flex items-center flex-wrap">
           <!-- View Menus -->
-          <div :class="btnContainer" class="border-2 border-violet-500">
+          <div :class="btnContainer" class="border-2 border-violet-500 mb-2">
             <IconSimpleView
               title="Simple View"
               @click="
@@ -106,7 +107,7 @@
                     <MenuItem v-slot="{ active }">
                       <a
                         @click="
-                          categoryNowSelected = 'All';
+                          categoryNowSelected = 'all';
                           filterCategory(categoryNowSelected);
                         "
                         href="#"
@@ -116,7 +117,7 @@
                             : 'text-gray-700',
                           'block px-4 py-2 text-sm',
                         ]"
-                        >All</a
+                        >all</a
                       >
                     </MenuItem>
                     <MenuItem
@@ -294,7 +295,7 @@
             <!-- 저장 / 취소 버튼 -->
             <font-awesome-icon
               v-if="editMode"
-              @click="saveAllNotes"
+              @click="saveallNotes"
               title="Save"
               icon="fa-floppy-disk"
               class="text-gray-400 cursor-pointer hover:text-green-500"
@@ -367,14 +368,14 @@
                 "
                 alt="favicon"
               />
-              <p class="ml-1">
+              <p class="ml-1 font-bold truncate">
                 {{ el.title }}
               </p>
             </div>
-            <p class="ml-1">
+            <p class="ml-1 truncate">
               {{ el.desc }}
             </p>
-            <p class="ml-1">
+            <p class="ml-1 truncate">
               {{ el.category }}
             </p>
           </div>
@@ -392,7 +393,7 @@
               alt="favicon"
             />
             <p
-              class="ml-1 pr-2 border-r-2 border-grey truncate"
+              class="ml-1 pr-2 border-r-2 border-grey font-bold truncate"
               style="width: 20%"
             >
               {{ el.title }}
@@ -468,7 +469,7 @@
               class="border border-gray-300 w-full"
             >
               <option value="" disabled>Select a category</option>
-              <option value="All">All</option>
+              <!-- <option value="all">all</option> -->
               <option
                 v-for="category in categoryList"
                 :key="category.id"
@@ -584,7 +585,7 @@ const viewType = ref("");
 const sortType = ref("");
 const categoryList = ref([]);
 const categoryText = ref("");
-const categoryNowSelected = ref("All");
+const categoryNowSelected = ref("all");
 const isModalOpen = ref(false);
 
 // -------------------------- 함수 선언부 --------------------------
@@ -618,29 +619,29 @@ async function getNoteData() {
       notes.value = data.sort(
         (a, b) => new Date(b.writetime) - new Date(a.writetime)
       );
-      categoryNowSelected.value = "All";
+      categoryNowSelected.value = "all";
       break;
     case "Least Recent":
       // writetime 기준으로 오래된 순으로 정렬
       notes.value = data.sort(
         (a, b) => new Date(a.writetime) - new Date(b.writetime)
       );
-      categoryNowSelected.value = "All";
+      categoryNowSelected.value = "all";
       break;
     case "Most Popular":
       // 많이 클릭된 순으로 정렬
       notes.value = data.sort((a, b) => b.clicknum - a.clicknum);
-      categoryNowSelected.value = "All";
+      categoryNowSelected.value = "all";
       break;
     case "Least Popular":
       // 적게 클릭된 순으로 정렬
       notes.value = data.sort((a, b) => a.clicknum - b.clicknum);
-      categoryNowSelected.value = "All";
+      categoryNowSelected.value = "all";
       break;
     default:
       // 기본정렬 : 기본적으로 supabase는 DB수정된걸 나중으로 보여줌.
       notes.value = data;
-      categoryNowSelected.value = "All";
+      categoryNowSelected.value = "all";
       break;
   }
   console.log("notes.value", notes.value);
@@ -731,7 +732,7 @@ const addUIdata = async () => {
 };
 
 // Update : 노트 전체저장
-const saveAllNotes = async () => {
+const saveallNotes = async () => {
   const updates = notes.value.map((note) => ({
     id: note.id,
     title: note.title,
@@ -749,7 +750,7 @@ const saveAllNotes = async () => {
     console.error("Error saving all notes:", error.message);
   } else {
     toggleEditMode();
-    console.log("All notes have been saved.");
+    console.log("all notes have been saved.");
   }
 };
 
@@ -922,7 +923,7 @@ async function filterCategory(categoryNowSelected) {
   // 필터링 전 전체 노트가져와야됨.
   notes.value = data;
 
-  if (categoryNowSelected === "All") {
+  if (categoryNowSelected === "all") {
     notes.value = data;
   } else {
     const filteredNotes = notes.value.filter(
