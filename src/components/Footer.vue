@@ -195,12 +195,16 @@
     </div>
 
     <div class="w-full bg-black/5 p-4 text-center">
-      © 2023 Copyright:
+      © {{ nowYear }} Copyright:
       <a class="font-semibold" href="#"> YohaSim </a>
     </div>
   </footer>
 </template>
 
-<script setup></script>
+<script setup>
+import { onMounted, ref } from "vue";
+const nowYear = ref("");
+nowYear.value = new Date().getFullYear();
+</script>
 
 <style scoped lang="scss"></style>
