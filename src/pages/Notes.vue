@@ -351,9 +351,7 @@
             <p class="ml-1">
               {{ el.title }}
             </p>
-            <p class="ml-1">
-              {{ el.category }}
-            </p>
+            <!-- <p class="ml-1">| {{ el.category }}</p> -->
           </div>
           <!-- grid view -->
           <div
@@ -393,16 +391,25 @@
               "
               alt="favicon"
             />
-            <p class="ml-1 pr-2 border-r-2 border-grey">
+            <p
+              class="ml-1 pr-2 border-r-2 border-grey truncate"
+              style="width: 20%"
+            >
               {{ el.title }}
             </p>
-            <p class="ml-1 pr-2 border-r-2 border-grey">
+            <p
+              class="ml-1 pr-2 border-r-2 border-grey truncate"
+              style="width: 30%"
+            >
               {{ el.desc }}
             </p>
-            <p class="ml-1">
+            <p
+              class="ml-1 pr-2 border-r-2 border-grey truncate"
+              style="width: 30%"
+            >
               {{ el.url }}
             </p>
-            <p class="ml-1">
+            <p class="ml-1 truncate" style="width: auto">
               {{ el.category }}
             </p>
           </div>
@@ -455,7 +462,11 @@
               placeholder="Category"
             /> -->
             <!-- @change="updateCategory" -->
-            <select v-model="el.category" class="border border-gray-300 w-full">
+            <select
+              v-model="el.category"
+              :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+              class="border border-gray-300 w-full"
+            >
               <option value="" disabled>Select a category</option>
               <option value="All">All</option>
               <option
@@ -881,7 +892,17 @@ const selectViewType = computed(() => {
 });
 
 const cardViewType = computed(() => {
-  const baseClass = viewType.value === "list" ? "mt-3" : "m-1";
+  let baseClass = "";
+  if (viewType.value === "simple") {
+    baseClass = "simple-card m-1";
+  } else if (viewType.value === "grid") {
+    baseClass = "grid-card m-1";
+  } else if (viewType.value === "list") {
+    baseClass = "list-card mt-3";
+  }
+  // if (viewType.value === "grid") baseClass = "m-1";
+  // if (viewType.value === "list") baseClass = "mt-3";
+  // const baseClass = viewType.value === "list" ? "mt-3" : "m-1";
   const hoverClass = "hover:bg-violet-100 hover:border-violet-300";
   return !editMode.value ? `${baseClass} ${hoverClass}` : baseClass;
 });
@@ -926,6 +947,14 @@ input {
 }
 .editMode-off {
   cursor: pointer;
+}
+/* 뷰 종류별 카드 스타일 줄때 쓰기 */
+.simple-card {
+  max-width: 292px;
+}
+.grid-card {
+}
+.list-card {
 }
 // 카테고리 편집
 .my-cancle-btn {

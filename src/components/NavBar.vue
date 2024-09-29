@@ -18,36 +18,16 @@ md: 기준으로 반응형 처리함.
       <!-- 네비메뉴 -->
       <div class="md:block md:w-1/3">
         <ul class="flex justify-center">
-          <li class="mr-12">
+          <li
+            class="mr-12 hover:text-violet-500"
+            v-for="item in navItems"
+            :key="item.text"
+          >
             <a
+              :href="item.link"
               class="text-coolGray-500 hover:text-coolGray-900 font-medium"
-              href="#"
             >
-              Product
-            </a>
-          </li>
-          <li class="mr-12">
-            <a
-              class="text-coolGray-500 hover:text-coolGray-900 font-medium"
-              href="#"
-            >
-              Features
-            </a>
-          </li>
-          <li class="mr-12">
-            <a
-              class="text-coolGray-500 hover:text-coolGray-900 font-medium"
-              href="#"
-            >
-              Resources
-            </a>
-          </li>
-          <li>
-            <a
-              class="text-coolGray-500 hover:text-coolGray-900 font-medium"
-              href="#"
-            >
-              Pricing
+              {{ item.text }}
             </a>
           </li>
         </ul>
@@ -98,8 +78,9 @@ md: 기준으로 반응형 처리함.
 
   <!-- 모바일 네비바 -->
   <div
-    class="navbar-menu fixed top-0 left-0 z-50 w-full h-full bg-coolGray-900 bg-opacity-50"
+    class="navbar-menu fixed top-0 left-0 z-50 w-full h-full bg-gray-900 bg-opacity-50"
     :class="{ 'translate-x-0': isMenuOpen, '-translate-x-full': !isMenuOpen }"
+    style="transition: 0.5s"
   >
     <div
       class="fixed top-0 left-0 bottom-0 w-full w-4/6 max-w-xs bg-white transition-transform duration-300 ease-in-out"
@@ -113,37 +94,17 @@ md: 기준으로 반응형 처리함.
               alt=""
             />
           </a>
-          <ul class="py-6">
-            <li>
+          <ul class="py-6 h-full flex flex-col justify-start">
+            <li
+              class="hover:text-violet-500"
+              v-for="item in navItems"
+              :key="item.text"
+            >
               <a
-                class="block py-3 px-4 text-coolGray-500 hover:text-coolGray-900 font-medium hover:bg-coolGray-50 rounded-md"
-                href="#"
+                :href="item.link"
+                class="block py-3 px-4 text-coolGray-500 hover:text-coolGray-900 text-lg font-medium hover:bg-coolGray-50 rounded-md"
               >
-                Product
-              </a>
-            </li>
-            <li>
-              <a
-                class="block py-3 px-4 text-coolGray-500 hover:text-coolGray-900 font-medium hover:bg-coolGray-50 rounded-md"
-                href="#"
-              >
-                Features
-              </a>
-            </li>
-            <li>
-              <a
-                class="block py-3 px-4 text-coolGray-500 hover:text-coolGray-900 font-medium hover:bg-coolGray-50 rounded-md"
-                href="#"
-              >
-                Pricing
-              </a>
-            </li>
-            <li>
-              <a
-                class="block py-3 px-4 text-coolGray-500 hover:text-coolGray-900 font-medium hover:bg-coolGray-50 rounded-md"
-                href="#"
-              >
-                Resources
+                {{ item.text }}
               </a>
             </li>
           </ul>
@@ -215,6 +176,13 @@ import { getSessionData } from "../../util/supabase/authUtils";
 
 const isMenuOpen = ref(false);
 const user = ref(null);
+// 네비바 메뉴는 여기서 관리
+const navItems = ref([
+  { text: "Product", link: "#" },
+  { text: "Features", link: "#" },
+  { text: "Pricing", link: "#" },
+  { text: "Resources", link: "#" },
+]);
 
 onMounted(async () => {
   user.value = await getSessionData();
