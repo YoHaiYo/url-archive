@@ -9,8 +9,6 @@ VITE_SUPABASE_ANON_KEY = ~
 
 ### 참고 링크
 
-- 배포 : https://linkport-vue-try.vercel.app/
-- 깃허브 : https://github.com/YoHaiYo/linkport_vue_try
 - supabase filter 구문 : https://supabase.com/docs/reference/javascript/using-filters
 
 ### vue에서 폰트어썸사용
