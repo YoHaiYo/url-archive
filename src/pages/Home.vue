@@ -3,7 +3,7 @@
   <section
     class="relative bg-white overflow-hidden"
     style="
-      background-image: url('/public/pattern-white.svg') !important;
+      background-image: url('/pattern-white.svg') !important;
       background-position: center;
     "
   >
