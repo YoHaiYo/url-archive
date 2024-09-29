@@ -81,7 +81,7 @@
                 <MenuButton
                   class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-violet-50"
                 >
-                  {{ categoryArr[categoryArrIndex] }}
+                  {{ categoryNowSelected }}
                   <font-awesome-icon
                     icon="fa-chevron-down"
                     class="text-gray-400 mt-1"
@@ -99,11 +99,16 @@
                 leave-to-class="transform opacity-0 scale-95"
               >
                 <MenuItems
+                  style="min-width: 150px"
                   class="absolute right-0 w-auto z-10 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
-                  <div class="py-1">
+                  <div class="">
                     <MenuItem v-slot="{ active }">
                       <a
+                        @click="
+                          categoryNowSelected = 'All';
+                          filterCategory(categoryNowSelected);
+                        "
                         href="#"
                         :class="[
                           active
@@ -116,11 +121,14 @@
                     </MenuItem>
                     <MenuItem
                       v-slot="{ active }"
-                      v-for="(el, idx) in categoryArr"
+                      v-for="(el, idx) in categoryList"
                       :key="idx"
                     >
                       <a
-                        @click="categoryArrIndex = idx"
+                        @click="
+                          categoryNowSelected = el.category;
+                          filterCategory(categoryNowSelected);
+                        "
                         href="#"
                         :class="[
                           active
@@ -128,7 +136,7 @@
                             : 'text-gray-700',
                           'block px-4 py-2 text-sm',
                         ]"
-                        >{{ el }}</a
+                        >{{ el.category }}</a
                       >
                     </MenuItem>
 
@@ -136,6 +144,7 @@
                       <a
                         href="#"
                         @click="openCategoryModal"
+                        class="border-t border-grey-300 bg-gray-200 hover:bg-violet-300"
                         :class="[
                           active
                             ? 'bg-violet-100 text-gray-900'
@@ -144,11 +153,11 @@
                         ]"
                       >
                         <font-awesome-icon
-                          icon="fa-add"
+                          icon="fa-edit"
                           class="text-gray-500"
                           style="font-size: 15"
                         />
-                        add more
+                        Edit Category
                       </a>
                     </MenuItem>
                   </div>
@@ -439,12 +448,24 @@
               v-model="el.url"
               placeholder="URL"
             />
-            <input
+            <!-- <input
               :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
               class="w-full border text-gray-600"
               v-model="el.category"
               placeholder="Category"
-            />
+            /> -->
+            <!-- @change="updateCategory" -->
+            <select v-model="el.category" class="border border-gray-300 w-full">
+              <option value="" disabled>Select a category</option>
+              <option value="All">All</option>
+              <option
+                v-for="category in categoryList"
+                :key="category.id"
+                :value="category.category"
+              >
+                {{ category.category }}
+              </option>
+            </select>
             <font-awesome-icon
               v-if="viewType === 'list'"
               @click="deleteNote(el.id)"
@@ -550,11 +571,10 @@ const newUrl = ref("");
 const editMode = ref(false);
 const viewType = ref("");
 const sortType = ref("");
-const categoryArr = ref(["Design", "Develop", "AI", "ETC"]);
-const categoryArrIndex = ref(0);
 const categoryList = ref([]);
 const categoryText = ref("");
-const isModalOpen = ref(true);
+const categoryNowSelected = ref("All");
+const isModalOpen = ref(false);
 
 // -------------------------- 함수 선언부 --------------------------
 
@@ -607,7 +627,6 @@ async function getNoteData() {
       notes.value = data;
       break;
   }
-
   console.log("notes.value", notes.value);
 }
 
@@ -770,11 +789,7 @@ const updateCategory = async (id, newCategory) => {
   if (error) {
     console.error("Error updating category:", error.message);
   } else {
-    // 카테고리 목록을 업데이트하여 UI에 반영
-    const index = categoryList.value.findIndex((el) => el.id === id);
-    if (index !== -1) {
-      categoryList.value[index].category = newCategory; // UI 업데이트
-    }
+    getCategoryData(); // ui상에 재표기
   }
 };
 
@@ -865,14 +880,32 @@ const cardViewType = computed(() => {
   const hoverClass = "hover:bg-violet-100 hover:border-violet-300";
   return !editMode.value ? `${baseClass} ${hoverClass}` : baseClass;
 });
-/// 카테고리 관련
+// 카테고리 모달
 const openCategoryModal = () => {
   isModalOpen.value = true;
 };
-
 const closeCategoryModal = () => {
   isModalOpen.value = false;
 };
+// 카테고리 필터링
+async function filterCategory(categoryNowSelected) {
+  const { data } = await supabase
+    .from(NoteTableName)
+    .select("*")
+    .eq("useremail", userEmail.value);
+  // 필터링 전 전체 노트가져와야됨.
+  notes.value = data;
+
+  if (categoryNowSelected === "All") {
+    notes.value = data;
+  } else {
+    const filteredNotes = notes.value.filter(
+      (note) => note.category === categoryNowSelected
+    );
+    notes.value = filteredNotes;
+  }
+  // console.log("filteredNotes", filteredNotes);
+}
 onMounted(() => {
   getUser();
 });
@@ -888,10 +921,6 @@ input {
 }
 .editMode-off {
   cursor: pointer;
-}
-// 카테고리 드롭다운
-#headlessui-menu-items-2 {
-  min-width: 130px !important;
 }
 // 카테고리 편집
 .my-cancle-btn {
