@@ -61,17 +61,21 @@ md: 기준으로 반응형 처리함.
               to="/login"
               >Login</router-link
             >
-            <router-link to="/signup">Sign Up</router-link>
+            <router-link
+              class="border border-grey-500 inline-block py-2 px-4 text-sm leading-5 font-medium focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50 rounded-md"
+              to="/signup"
+              >Sign Up</router-link
+            >
           </div>
           <div v-if="user" class="flex items-center gap-4">
             <span>Hello, {{ user.email }} !</span>
-            <router-link
+            <!-- <router-link
               class="inline-block py-2 px-4 text-sm leading-5 text-violet-50 bg-violet-500 hover:bg-violet-600 font-medium focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50 rounded-md"
               to="/notes"
               >dashboard</router-link
-            >
+            > -->
             <button
-              class="inline-block py-2 px-4 mr-2 leading-5 text-coolGray-500 hover:text-coolGray-900 bg-transparent font-medium rounded-md"
+              class="inline-block py-2 px-4 text-sm leading-5 text-white bg-violet-500 hover:bg-violet-600 font-medium text-center focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50 rounded-md"
               @click="logout"
             >
               Logout
@@ -146,7 +150,7 @@ md: 기준으로 반응형 처리함.
           <div class="flex flex-wrap">
             <div class="w-full mb-2">
               <router-link
-                class="mb-2 inline-block py-2 px-4 w-full text-sm leading-5 text-coolGray-500 hover:text-coolGray-900 bg-transparent font-medium text-center rounded-md"
+                class="mb-2 text-white bg-violet-500 inline-block py-2 px-4 w-full text-sm leading-5 text-coolGray-500 hover:text-coolGray-900 bg-transparent font-medium text-center rounded-md"
                 v-if="!user"
                 to="/login"
                 >Login</router-link
@@ -154,7 +158,7 @@ md: 기준으로 반응형 처리함.
             </div>
             <div class="w-full">
               <router-link
-                class="inline-block py-2 px-4 w-full text-sm leading-5 text-white bg-violet-500 hover:bg-violet-600 font-medium text-center focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50 rounded-md"
+                class="border border-grey-500 inline-block py-2 px-4 w-full text-sm leading-5 font-medium text-center focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50 rounded-md"
                 v-if="!user"
                 to="/signup"
                 >Sign Up</router-link
@@ -165,14 +169,14 @@ md: 기준으로 반응형 처리함.
               v-if="user"
               >Hello, {{ user.email }}</span
             >
-            <div class="w-full mb-2">
+            <!-- <div class="w-full mb-2">
               <router-link
                 class="inline-block py-2 px-4 w-full text-sm leading-5 text-white bg-violet-500 hover:bg-violet-600 font-medium text-center focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50 rounded-md"
                 v-if="user"
                 to="/notes"
                 >dashboard</router-link
               >
-            </div>
+            </div> -->
             <div class="w-full mb-2">
               <a
                 class="inline-block py-2 px-4 w-full text-sm leading-5 text-white bg-violet-500 hover:bg-violet-600 font-medium text-center focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50 rounded-md"

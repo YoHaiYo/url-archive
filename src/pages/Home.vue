@@ -465,4 +465,24 @@
   </section>
 </template>
 
-<script setup></script>
+<script setup>
+import { supabase } from "../../util/supabase/supabase";
+import { onMounted } from "vue";
+
+// 사용자 로그인 상태 확인 함수
+const checkUserSession = async () => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session) {
+    // 사용자가 로그인되어 있으면 특정 페이지로 이동
+    window.location.href = "/notes"; //
+  }
+};
+
+// 컴포넌트가 마운트될 때 사용자 세션 확인
+onMounted(() => {
+  checkUserSession();
+});
+</script>
