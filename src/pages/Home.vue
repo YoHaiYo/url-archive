@@ -2,10 +2,10 @@
   <!--- HEADER -->
   <section
     class="relative bg-white overflow-hidden"
-    :style="{
-      backgroundImage: 'url(/src/assets/svg/pattern-white.svg)',
-      backgroundPosition: 'center',
-    }"
+    style="
+      background-image: url('../assets/svg/pattern-white.svg');
+      background-position: center;
+    "
   >
     <div class="py-20 md:py-28">
       <div class="container px-4 mx-auto">
