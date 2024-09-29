@@ -189,8 +189,8 @@
                     <MenuItem v-slot="{ active }">
                       <a
                         @click="
-                          tabSortType('popular');
-                          updateSortType('popular');
+                          tabSortType('Most Popular');
+                          updateSortType('Most Popular');
                         "
                         href="#"
                         :class="[
@@ -199,14 +199,14 @@
                             : 'text-gray-700',
                           'block px-4 py-2 text-sm',
                         ]"
-                        >popular</a
+                        >Most Popular</a
                       >
                     </MenuItem>
                     <MenuItem v-slot="{ active }">
                       <a
                         @click="
-                          tabSortType('recent');
-                          updateSortType('recent');
+                          tabSortType('Least Popular');
+                          updateSortType('Least Popular');
                         "
                         href="#"
                         :class="[
@@ -215,38 +215,45 @@
                             : 'text-gray-700',
                           'block px-4 py-2 text-sm',
                         ]"
-                        >recent</a
+                        >Least Popular</a
+                      >
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                      <a
+                        @click="
+                          tabSortType('Most Recent');
+                          updateSortType('Most Recent');
+                        "
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                        >Most Recent</a
+                      >
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                      <a
+                        @click="
+                          tabSortType('Least Recent');
+                          updateSortType('Least Recent');
+                        "
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                        >Least Recent</a
                       >
                     </MenuItem>
                   </div>
                 </MenuItems>
               </transition>
             </Menu>
-
-            <p
-              @click="
-                tabSortType('popular');
-                updateSortType('popular');
-              "
-              class="ml-2 cursor-pointer text-sm"
-              :class="
-                sortType === 'popular' ? 'text-violet-500 font-bold' : null
-              "
-            >
-              Popular
-            </p>
-            <p
-              @click="
-                tabSortType('recent');
-                updateSortType('recent');
-              "
-              class="ml-2 cursor-pointer text-sm"
-              :class="
-                sortType === 'recent' ? 'text-violet-500 font-bold' : null
-              "
-            >
-              Recent
-            </p>
           </div>
           <!-- Btns : Edit / Share / Setting  -->
           <div :class="btnContainer" class="ml-2 border-2 border-violet-500">
@@ -485,7 +492,7 @@ const newUrl = ref("");
 const editMode = ref(false);
 const viewType = ref("");
 const sortType = ref("");
-const categoryArr = ref(["Design", "Develop", "AI", "ssssssssssssssss"]);
+const categoryArr = ref(["Design", "Develop", "AI", "ETC"]);
 const categoryArrIndex = ref(0);
 
 // -------------------------- 함수 선언부 --------------------------
@@ -511,18 +518,34 @@ async function getNoteData() {
     .select("*")
     .eq("useremail", userEmail.value);
 
-  if (sortType.value === "recent") {
-    // writetime 기준으로 최신 순으로 정렬
-    notes.value = data.sort(
-      (a, b) => new Date(b.writetime) - new Date(a.writetime)
-    );
-  } else if (sortType.value === "popular") {
-    // 많이 클릭된 순으로 정렬
-    notes.value = data.sort((a, b) => b.clicknum - a.clicknum);
-  } else {
-    // 기본정렬 : 기본적으로 supabase는 DB수정된걸 나중으로 보여줌.
-    notes.value = data;
+  // 필터링 구분
+  switch (sortType.value) {
+    case "Most Recent":
+      // writetime 기준으로 최신 순으로 정렬
+      notes.value = data.sort(
+        (a, b) => new Date(b.writetime) - new Date(a.writetime)
+      );
+      break;
+    case "Least Recent":
+      // writetime 기준으로 오래된 순으로 정렬
+      notes.value = data.sort(
+        (a, b) => new Date(a.writetime) - new Date(b.writetime)
+      );
+      break;
+    case "Most Popular":
+      // 많이 클릭된 순으로 정렬
+      notes.value = data.sort((a, b) => b.clicknum - a.clicknum);
+      break;
+    case "Least Popular":
+      // 적게 클릭된 순으로 정렬
+      notes.value = data.sort((a, b) => a.clicknum - b.clicknum);
+      break;
+    default:
+      // 기본정렬 : 기본적으로 supabase는 DB수정된걸 나중으로 보여줌.
+      notes.value = data;
+      break;
   }
+
   console.log("notes.value", notes.value);
 }
 
@@ -745,5 +768,9 @@ input {
 }
 .editMode-off {
   cursor: pointer;
+}
+// 카테고리 드롭다운
+#headlessui-menu-items-2 {
+  min-width: 130px !important;
 }
 </style>
