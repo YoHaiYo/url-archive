@@ -18,3 +18,68 @@ a {
 :root {
   --folder-border-color: #7b7b7b;
 }
+
+/* grid 클래스 안먹혀서 수작업으로 적음 */
+/* CSS for the grid layout */
+.grid {
+  display: grid;
+  gap: 1rem; /* gap-y-4 for vertical gap */
+}
+
+/* Responsive grid settings */
+@media (min-width: 640px) {
+  /* sm */
+  .grid {
+    grid-template-columns: repeat(2, 1fr); /* sm:grid-cols-2 */
+  }
+}
+
+@media (min-width: 768px) {
+  /* md */
+  .grid {
+    grid-template-columns: repeat(4, 1fr); /* md:grid-cols-4 */
+  }
+}
+
+@media (min-width: 1024px) {
+  /* lg */
+  .grid {
+    grid-template-columns: repeat(4, 1fr); /* lg:grid-cols-4 */
+    max-width: 96rem; /* lg:max-w-6xl (24rem = 384px, 96rem = 1536px) */
+  }
+}
+
+/* General styles */
+.max-w-4xl {
+  max-width: 64rem; /* 1024px */
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mt-8 {
+  margin-top: 2rem; /* 8 * 0.25rem */
+}
+
+.text-center {
+  text-align: center;
+}
+
+.gap-y-4 {
+  row-gap: 1rem; /* 4 * 0.25rem */
+}
+
+.sm\:gap-x-8 {
+  column-gap: 2rem; /* 8 * 0.25rem */
+}
+
+.sm\:text-left {
+  text-align: left;
+}
+
+/* Optional: Add styles for the elements inside the grid */
+.grid > * {
+  padding: 1rem; /* Optional: Add padding for each grid item */
+}
