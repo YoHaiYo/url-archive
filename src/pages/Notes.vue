@@ -77,7 +77,11 @@
               className="ml-2 cursor-pointer"
             />
             <!-- 카테고리 드롭다운-->
-            <Menu as="div" class="relative inline-block text-left ml-2">
+            <Menu
+              v-if="folderType === 'Basic Type'"
+              as="div"
+              class="relative inline-block text-left ml-2"
+            >
               <div>
                 <MenuButton
                   class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-violet-50"
@@ -168,6 +172,7 @@
 
             <!-- sortType 드롭다운 (recent, popular) -->
             <Menu
+              v-if="folderType === 'Basic Type'"
               as="div"
               class="relative inline-block text-left ml-2"
               title="filter type"
@@ -265,6 +270,69 @@
                 </MenuItems>
               </transition>
             </Menu>
+            <!-- // sortType 드롭다운 (recent, popular) -->
+            <!-- 폴더전환 드롭다운 -->
+            <Menu
+              as="div"
+              class="relative inline-block text-left ml-2"
+              title="filter type"
+            >
+              <div>
+                <MenuButton
+                  class="text-black-500 inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-violet-50"
+                >
+                  {{ folderType }}
+                  <font-awesome-icon
+                    icon="fa-chevron-down"
+                    class="text-gray-400 mt-1"
+                    style="font-size: 16"
+                  />
+                </MenuButton>
+              </div>
+
+              <transition
+                enter-active-class="transition ease-out duration-100"
+                enter-from-class="transform opacity-0 scale-95"
+                enter-to-class="transform opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75"
+                leave-from-class="transform opacity-100 scale-100"
+                leave-to-class="transform opacity-0 scale-95"
+              >
+                <MenuItems
+                  class="absolute right-0 z-10 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                >
+                  <div class="py-1">
+                    <MenuItem v-slot="{ active }">
+                      <a
+                        @click="tabfolderType('Basic Type')"
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                        >Basic Type</a
+                      >
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                      <a
+                        @click="tabfolderType('Folder Type')"
+                        href="#"
+                        :class="[
+                          active
+                            ? 'bg-violet-100 text-gray-900'
+                            : 'text-gray-700',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                        >Folder Type</a
+                      >
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </transition>
+            </Menu>
+            <!-- // 폴더전환 드롭다운 -->
           </div>
           <!-- Btns : Edit / Share / Setting  -->
           <div :class="btnContainer" class="ml-2 border-2 border-violet-500">
@@ -312,10 +380,205 @@
           </div>
         </div>
       </div>
-      <!-- Card Container-->
-      <!-- class="grid lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 max-w-4xl lg:max-w-6xl mx-auto mt-8 text-center gap-y-4 sm:gap-x-8 sm:text-left" -->
-      <div :class="selectViewType">
-        <!-- Card-->
+      <!-- Folder Card-->
+      <div v-if="folderType === 'Folder Type'" :class="selectViewType">
+        <div
+          v-for="category in categoriesState"
+          :key="category.name"
+          class="m-1 mt-2"
+        >
+          <span
+            class="folder-header bg-violet-100"
+            @click="toggleCategory(category.name)"
+          >
+            <span class="me-1">{{ category.name }}</span>
+            <span>
+              <font-awesome-icon
+                v-if="category.isOpen"
+                icon="fa-angle-down"
+                class="text-gray-400"
+                style="font-size: 16"
+              />
+              <font-awesome-icon
+                v-if="!category.isOpen"
+                icon="fa-angle-right"
+                class="text-gray-400"
+                style="font-size: 16"
+              />
+              <!-- {{ category.isOpen ? "▼" : "▶" }} -->
+            </span>
+            <!-- 펼치기 아이콘 -->
+          </span>
+          <div class="folder-body bg-violet-50" v-if="category.isOpen">
+            <!-- Card 리스트 출력 -->
+            <div
+              @click="
+                openLink(el.url);
+                updateClickNum(el, idx);
+              "
+              v-for="(el, idx) in category.notes"
+              :key="el.id"
+              class="bg-white border border-gray-300 rounded-md p-2 items-center justify-start"
+              :class="cardViewType"
+              :style="editMode ? null : { cursor: 'pointer' }"
+              :title="
+                el.url +
+                '\n' +
+                el.clicknum +
+                ' times cliked' +
+                '\n' +
+                el.writetime.slice(0, 10)
+              "
+            >
+              <!-- 평상시 -->
+              <!-- simple view -->
+              <div
+                v-if="viewType === 'simple' && !editMode"
+                class="flex items-center"
+              >
+                <img
+                  class="favicon"
+                  :src="
+                    'https://s2.googleusercontent.com/s2/favicons?domain_url=' +
+                    el.url
+                  "
+                  alt="favicon"
+                />
+                <p class="ml-1">{{ el.title }}</p>
+              </div>
+              <!-- grid view -->
+              <div
+                v-if="viewType === 'grid' && !editMode"
+                class="flexxx items-centerxx"
+              >
+                <div class="flex items-center">
+                  <img
+                    class="favicon"
+                    :src="
+                      'https://s2.googleusercontent.com/s2/favicons?domain_url=' +
+                      el.url
+                    "
+                    alt="favicon"
+                  />
+                  <p class="ml-1 font-bold truncate">{{ el.title }}</p>
+                </div>
+                <p class="ml-1 truncate">{{ el.desc }}</p>
+                <p class="ml-1 truncate">{{ el.category }}</p>
+              </div>
+              <!-- list view -->
+              <div
+                v-if="viewType === 'list' && !editMode"
+                class="flex items-center"
+              >
+                <img
+                  class="favicon"
+                  :src="
+                    'https://s2.googleusercontent.com/s2/favicons?domain_url=' +
+                    el.url
+                  "
+                  alt="favicon"
+                />
+                <p
+                  class="ml-1 pr-2 border-r-2 border-grey font-bold truncate"
+                  style="width: 20%"
+                >
+                  {{ el.title }}
+                </p>
+                <p
+                  class="ml-1 pr-2 border-r-2 border-grey truncate"
+                  style="width: 30%"
+                >
+                  {{ el.desc }}
+                </p>
+                <p
+                  class="ml-1 pr-2 border-r-2 border-grey truncate"
+                  style="width: 30%"
+                >
+                  {{ el.url }}
+                </p>
+                <p class="ml-1 truncate" style="width: auto">
+                  {{ el.category }}
+                </p>
+              </div>
+              <!-- 편집모드일때 -->
+              <div
+                v-if="editMode"
+                :class="viewType === 'list' ? 'flex items-center' : ''"
+              >
+                <div class="flex justify-between items-center">
+                  <img
+                    class="favicon"
+                    :class="viewType === 'list' ? 'mr-4' : ''"
+                    :src="
+                      'https://s2.googleusercontent.com/s2/favicons?domain_url=' +
+                      el.url
+                    "
+                    alt="favicon"
+                  />
+                  <font-awesome-icon
+                    v-if="viewType !== 'list'"
+                    @click="deleteNote(el.id)"
+                    title="Delete"
+                    icon="fa-trash"
+                    class="ml-3 text-gray-400 cursor-pointer hover:text-red-500"
+                    style="font-size: 20"
+                  />
+                </div>
+                <input
+                  class="w-full border text-gray-600"
+                  :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+                  v-model="el.title"
+                  placeholder="Title"
+                />
+                <input
+                  :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+                  class="w-full border text-gray-600"
+                  v-model="el.desc"
+                  placeholder="Description"
+                />
+                <input
+                  :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+                  class="w-full border text-gray-600"
+                  v-model="el.url"
+                  placeholder="URL"
+                />
+                <select
+                  v-model="el.category"
+                  :class="viewType !== 'list' ? 'mt-2' : 'ml-2'"
+                  class="border border-gray-300 w-full"
+                >
+                  <option value="" disabled>Select a category</option>
+                  <option
+                    v-for="category in categoryList"
+                    :key="category.id"
+                    :value="category.category"
+                  >
+                    {{ category.category }}
+                  </option>
+                </select>
+                <font-awesome-icon
+                  v-if="viewType === 'list'"
+                  @click="deleteNote(el.id)"
+                  title="Delete"
+                  icon="fa-trash"
+                  class="ml-3 text-gray-400 cursor-pointer hover:text-red-500"
+                  style="font-size: 20"
+                />
+              </div>
+            </div>
+            <!-- Card 종료 -->
+          </div>
+          <div
+            class="folder-footer bg-violet-50"
+            @click="toggleCategory(category.name)"
+            v-if="!category.isOpen"
+          ></div>
+        </div>
+      </div>
+      <!-- //Folder Card-->
+
+      <!-- Basic Card-->
+      <div v-if="folderType === 'Basic Type'" :class="selectViewType">
         <div
           @click="
             openLink(el.url);
@@ -488,9 +751,8 @@
             />
           </div>
         </div>
-        <!-- /Card-->
       </div>
-      <!-- /Card Container-->
+      <!-- //Basic Card-->
     </div>
   </section>
 
@@ -583,10 +845,12 @@ const newUrl = ref("");
 const editMode = ref(false);
 const viewType = ref("");
 const sortType = ref("");
+const folderType = ref("Basic Type");
 const categoryList = ref([]);
 const categoryText = ref("");
 const categoryNowSelected = ref("all");
 const isModalOpen = ref(false);
+const categoriesState = ref([]); // 각 카테고리의 펼침 상태를 저장하는 배열
 
 // -------------------------- 함수 선언부 --------------------------
 
@@ -611,6 +875,11 @@ async function getNoteData() {
     .from(NoteTableName)
     .select("*")
     .eq("useremail", userEmail.value);
+
+  // 노트 데이터가져온 후 카테고리 상태에 할당
+  categoriesState.value.forEach((category) => {
+    category.notes = data.filter((note) => note.category === category.name);
+  });
 
   // 필터링 구분
   switch (sortType.value) {
@@ -666,6 +935,8 @@ async function getCategoryData() {
     .select("*")
     .eq("useremail", userEmail.value);
   categoryList.value = data;
+  // 카테고리 상태 초기화
+  createCategoryState(); // 카테고리 상태 생성
   console.log("usercategory : ", categoryList.value);
 }
 
@@ -834,6 +1105,26 @@ const deleteCategory = async (id) => {
 };
 
 /// 프론트 함수
+// 카테고리 리스트를 생성하는 함수 추가
+const createCategoryState = () => {
+  categoryList.value.forEach((category) => {
+    categoriesState.value.push({
+      name: category.category, // 카테고리 이름
+      isOpen: false, // 초기값: 접힌 상태
+      notes: [], // 이곳에 해당 카테고리의 노트들을 저장
+    });
+  });
+};
+// 카테고리 펼치기/접기 기능
+const toggleCategory = (categoryName) => {
+  const category = categoriesState.value.find(
+    (cat) => cat.name === categoryName
+  );
+  if (category) {
+    category.isOpen = !category.isOpen; // 상태 반전
+  }
+};
+
 // 편집모드 on/off
 const toggleEditMode = () => {
   editMode.value = !editMode.value;
@@ -885,6 +1176,14 @@ const tabSortType = (type) => {
   sortType.value = type;
   console.log(sortType.value);
 
+  getNoteData(); // 타입변경 후 재정렬
+};
+
+// foldertype 변경
+const tabfolderType = (type) => {
+  // Folder Type, Basic Type 중 선택
+  folderType.value = type;
+  console.log(folderType.value);
   getNoteData(); // 타입변경 후 재정렬
 };
 
@@ -962,5 +1261,32 @@ input {
   position: absolute;
   right: 10px;
   top: 10px;
+}
+.folder-header {
+  width: auto;
+  border-top: 1px solid var(--folder-border-color);
+  border-left: 1px solid var(--folder-border-color);
+  border-right: 1px solid var(--folder-border-color);
+  border-radius: 10px 10px 0 0;
+  padding: 3px 3px 0;
+  cursor: pointer;
+}
+.folder-body {
+  border: 1px solid var(--folder-border-color);
+  border-radius: 0 10px 10px 10px;
+  padding: 0.5rem;
+  transform: translateY(-1px);
+}
+.folder-footer {
+  border: 1px solid var(--folder-border-color);
+  border-radius: 0 10px 10px 10px;
+  padding: 0.5rem;
+  width: 150px;
+  height: 50px;
+  transform: translateY(-1px);
+  cursor: pointer;
+}
+.folder-bg {
+  background-color: #ffdb87;
 }
 </style>

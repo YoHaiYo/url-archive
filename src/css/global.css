@@ -14,3 +14,7 @@ a {
 .cusor-pointer {
   cursor: pointer;
 }
+
+:root {
+  --folder-border-color: #7b7b7b;
+}

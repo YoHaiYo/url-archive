@@ -53,7 +53,7 @@ https://s2.googleusercontent.com/s2/favicons?domain_url=https://www.stackoverflo
 - 로그인 시 아예 /notes페이지만 사용하게 하기. (figma, notion 참고) (V)
 - 카테고리, 클릭수 등으로 필터 (V)
 - 드래그앤드롭으로 위치 수정
-- 외부로 공유
+- 외부로 공유 -> 폴더타입 일시 해당 폴더만 공유, 기본타입일시 전체 공유. view는 grid뷰 고정시키기
 - 구글, 깃허브 로그인
 - 카테고리별 분류를 폴더처럼 접기기능 처리?
 - url 한번에 입력 (즐찾파일, 엑셀 등)?
